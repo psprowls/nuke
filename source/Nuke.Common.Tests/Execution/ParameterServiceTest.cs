@@ -11,7 +11,7 @@ using Nuke.Common.Execution;
 using Nuke.Common.Utilities.Collections;
 using Xunit;
 
-namespace Nuke.Common.Tests
+namespace Nuke.Common.Tests.Execution
 {
     public class ParameterServiceTest
     {
