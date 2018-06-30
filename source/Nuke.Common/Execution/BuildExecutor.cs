@@ -28,7 +28,8 @@ namespace Nuke.Common.Execution
             var executionList = default(IReadOnlyCollection<TargetDefinition>);
             try
             {
-                var build = CreateBuildInstance(defaultTargetExpression);
+                var buildFactory = new BuildFactory(x => NukeBuild.Instance = x);
+                var build = buildFactory.Create(defaultTargetExpression);
                 InjectionService.InjectValues(build);
                 HandleEarlyExits(build);
 
@@ -115,20 +116,6 @@ namespace Nuke.Common.Execution
 
             if (build.Help || build.Graph)
                 Environment.Exit(exitCode: 0);
-        }
-
-        private static T CreateBuildInstance<T>(Expression<Func<T, Target>> defaultTargetExpression)
-            where T : NukeBuild
-        {
-            var constructors = typeof(T).GetConstructors();
-            ControlFlow.Assert(constructors.Length == 1 && constructors.Single().GetParameters().Length == 0,
-                $"Type '{typeof(T).Name}' must declare a single parameterless constructor.");
-
-            var build = Activator.CreateInstance<T>();
-            build.TargetDefinitions = build.GetTargetDefinitions(defaultTargetExpression);
-            NukeBuild.Instance = build;
-
-            return build;
         }
     }
 }
