@@ -8,9 +8,9 @@ using System.Reflection;
 
 namespace Nuke.Common.Execution
 {
-    internal static class InjectionService
+    internal class InjectionService
     {
-        public static void InjectValues(NukeBuild build)
+        public void InjectValues(NukeBuild build)
         {
             var anyInjected = false;
 

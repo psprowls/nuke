@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Nuke.Common.BuildServers;
 using Nuke.Common.OutputSinks;
 using Nuke.Common.Utilities;
 
@@ -16,6 +17,9 @@ namespace Nuke.Common.Execution
     internal static class BuildExecutor
     {
         public const string DefaultTarget = "default";
+
+        private static readonly BuildFactory s_buildFactory = new BuildFactory(x => NukeBuild.Instance = x);
+        private static readonly InjectionService s_injectionService = new InjectionService();
 
         public static int Execute<T>(Expression<Func<T, Target>> defaultTargetExpression)
             where T : NukeBuild
@@ -28,9 +32,8 @@ namespace Nuke.Common.Execution
             var executionList = default(IReadOnlyCollection<TargetDefinition>);
             try
             {
-                var buildFactory = new BuildFactory(x => NukeBuild.Instance = x);
-                var build = buildFactory.Create(defaultTargetExpression);
-                InjectionService.InjectValues(build);
+                var build = s_buildFactory.Create(defaultTargetExpression);
+                s_injectionService.InjectValues(build);
                 HandleEarlyExits(build);
 
                 executionList = TargetDefinitionLoader.GetExecutingTargets(build, build.InvokedTargets);
