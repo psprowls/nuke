@@ -24,8 +24,8 @@ namespace Nuke.Common.Execution
                 }
             }
 
-            var assembly = typeof(BuildExecutor).GetTypeInfo().Assembly;
-            var resourceName = typeof(BuildExecutor).Namespace + ".graph.html";
+            var assembly = typeof(BuildManager).GetTypeInfo().Assembly;
+            var resourceName = typeof(BuildManager).Namespace + ".graph.html";
             var resourceStream = assembly.GetManifestResourceStream(resourceName).NotNull("resourceStream != null");
 
             var graph = new StringBuilder();

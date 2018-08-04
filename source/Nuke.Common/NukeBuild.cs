@@ -57,7 +57,7 @@ namespace Nuke.Common
         protected static int Execute<T>(Expression<Func<T, Target>> defaultTargetExpression)
             where T : NukeBuild
         {
-            return BuildExecutor.Execute(defaultTargetExpression);
+            return BuildManager.Execute(defaultTargetExpression);
         }
 
         internal IReadOnlyCollection<ExecutableTarget> ExecutableTargets { get; set; }

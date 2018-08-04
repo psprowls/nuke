@@ -16,8 +16,8 @@ namespace Nuke.Common.Execution
     {
         public static IReadOnlyCollection<ExecutableTarget> GetExecutingTargets(NukeBuild build, [CanBeNull] string[] invokedTargetNames = null)
         {
-            ControlFlow.Assert(build.ExecutableTargets.All(x => !x.Name.EqualsOrdinalIgnoreCase(BuildExecutor.DefaultTarget)),
-                $"The name '{BuildExecutor.DefaultTarget}' cannot be used as target name.");
+            ControlFlow.Assert(build.ExecutableTargets.All(x => !x.Name.EqualsOrdinalIgnoreCase(BuildManager.DefaultTarget)),
+                $"The name '{BuildManager.DefaultTarget}' cannot be used as target name.");
 
             var invokedTargets = invokedTargetNames?.Select(x => GetExecutableTarget(x, build)).ToList() ?? new List<ExecutableTarget>();
             var executingTargets = GetUnfilteredExecutingTargets(build, invokedTargets);
@@ -76,7 +76,7 @@ namespace Nuke.Common.Execution
             string targetName,
             NukeBuild build)
         {
-            if (targetName.EqualsOrdinalIgnoreCase(BuildExecutor.DefaultTarget))
+            if (targetName.EqualsOrdinalIgnoreCase(BuildManager.DefaultTarget))
                 return build.ExecutableTargets.Single(x => x.IsDefault);
 
             var targetDefinition = build.ExecutableTargets.SingleOrDefault(x => x.Name.EqualsOrdinalIgnoreCase(targetName));

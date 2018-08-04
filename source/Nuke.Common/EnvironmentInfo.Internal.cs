@@ -64,7 +64,7 @@ namespace Nuke.Common
                     return parameter;
                 }
 
-                return new[] { BuildExecutor.DefaultTarget };
+                return new[] { BuildManager.DefaultTarget };
             }
         }
 
