@@ -13,15 +13,11 @@ namespace Nuke.Common.Tests.Execution
 {
     public class BuildFactoryTest
     {
-        private NukeBuild _singleton;
-
         [Fact]
         public void Test()
         {
-            var buildFactory = new BuildFactory(x => { _singleton = x; });
+            var buildFactory = new BuildFactory();
             var build = buildFactory.Create<Build>(x => x.Compile);
-
-            _singleton.Should().Be(build);
 
             var targets = build.ExecutableTargets;
             targets.Select(x => x.Name).Should().BeEquivalentTo(

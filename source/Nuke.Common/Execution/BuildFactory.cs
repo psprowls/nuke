@@ -15,13 +15,6 @@ namespace Nuke.Common.Execution
 {
     internal class BuildFactory
     {
-        private readonly Action<NukeBuild> _singletonSetter;
-
-        public BuildFactory(Action<NukeBuild> singletonSetter)
-        {
-            _singletonSetter = singletonSetter;
-        }
-
         public T Create<T>(Expression<Func<T, Target>> defaultTargetExpression)
             where T : NukeBuild
         {
@@ -32,7 +25,6 @@ namespace Nuke.Common.Execution
             var build = Activator.CreateInstance<T>();
             var defaultTarget = defaultTargetExpression.Compile().Invoke(build);
             build.ExecutableTargets = GetTargetDefinitions(build, defaultTarget);
-            _singletonSetter(build);
 
             return build;
         }

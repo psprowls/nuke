@@ -36,7 +36,7 @@ namespace Nuke.Common.Tests
             new[] { nameof(TestBuild.Dependency) })]
         public void Test(string[] invokedTargets, string[] expectedTargets)
         {
-            var build = new BuildFactory(y => { }).Create<TestBuild>(x => x.Dependency);
+            var build = new BuildFactory().Create<TestBuild>(x => x.Dependency);
             TargetDefinitionLoader.GetExecutingTargets(build, invokedTargets)
                 .Where(x => !x.Skip && x.Conditions.All(y => y()))
                 .Select(x => x.Name)

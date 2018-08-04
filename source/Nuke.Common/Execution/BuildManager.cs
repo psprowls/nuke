@@ -16,11 +16,9 @@ namespace Nuke.Common.Execution
     {
         public const string DefaultTarget = "default";
 
-        private static readonly BuildFactory s_buildFactory = new BuildFactory(x => NukeBuild.Instance = x);
         private static readonly InjectionService s_injectionService = new InjectionService();
 
-        public static int Execute<T>(Expression<Func<T, Target>> defaultTargetExpression)
-            where T : NukeBuild
+        public static int Execute(NukeBuild build)
         {
             Logger.Log(FigletTransform.GetText("NUKE"));
             Logger.Log($"Version: {typeof(BuildManager).GetTypeInfo().Assembly.GetVersionText()}");
@@ -30,7 +28,6 @@ namespace Nuke.Common.Execution
             var executingTargets = default(IReadOnlyCollection<ExecutableTarget>);
             try
             {
-                var build = s_buildFactory.Create(defaultTargetExpression);
                 s_injectionService.InjectValues(build);
                 HandleEarlyExits(build);
 
@@ -64,8 +61,7 @@ namespace Nuke.Common.Execution
             }
         }
 
-        private static void HandleEarlyExits<T>(T build)
-            where T : NukeBuild
+        private static void HandleEarlyExits(NukeBuild build)
         {
             if (build.Help)
             {
