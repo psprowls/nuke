@@ -25,20 +25,24 @@ namespace Nuke.Common.Tests.Execution
 
             var targets = build.ExecutableTargets;
             targets.Select(x => x.Name).Should().BeEquivalentTo(
+                nameof(Build.Merge),
                 nameof(Build.Clean),
                 nameof(Build.Compile),
                 nameof(Build.Test),
                 nameof(Build.Pack),
+                nameof(Build.Analyze),
                 nameof(Build.Publish));
             targets.Should().ContainSingle(x => x.IsDefault);
 
-            ExecutableTarget GetTarget(Func<Build, Target> factorySelector) => targets.Single(x => x.Factory == factorySelector(build));
+            ExecutableTarget GetTarget(string targetName) => targets.Single(x => x.Name == targetName);
 
-            var clean = GetTarget(x => x.Clean);
-            var compile = GetTarget(x => x.Compile);
-            var test = GetTarget(x => x.Test);
-            var pack = GetTarget(x => x.Pack);
-            var publish = GetTarget(x => x.Publish);
+            var merge = GetTarget(nameof(Build.Merge));
+            var clean = GetTarget(nameof(Build.Clean));
+            var compile = GetTarget(nameof(Build.Compile));
+            var test = GetTarget(nameof(Build.Test));
+            var pack = GetTarget(nameof(Build.Pack));
+            var analyze = GetTarget(nameof(Build.Analyze));
+            var publish = GetTarget(nameof(Build.Publish));
 
             compile.IsDefault.Should().BeTrue();
 
@@ -46,9 +50,11 @@ namespace Nuke.Common.Tests.Execution
             clean.Actions.Should().Equal(build.Actions);
             clean.Conditions.Should().Equal(build.Conditions);
             clean.Requirements.Should().Equal(build.Requirements.Cast<LambdaExpression>());
-            
+
+            clean.Dependencies.Should().BeEquivalentTo(merge);
             compile.Dependencies.Should().BeEquivalentTo(clean);
             pack.Dependencies.Should().BeEquivalentTo(compile);
+            analyze.Dependencies.Should().BeEquivalentTo(clean);
             publish.Dependencies.Should().BeEquivalentTo(test, pack);
         }
 
@@ -59,8 +65,8 @@ namespace Nuke.Common.Tests.Execution
             public readonly Func<bool>[] Conditions = { () => true };
             public readonly Expression<Func<bool>>[] Requirements = { () => true };
 
-            // public Target Release => _ => _
-            //     .Before(Clean);
+            public Target Merge => _ => _
+                .Before(Clean);
 
             public Target Clean => _ => _
                 .Description(Description)
@@ -76,6 +82,9 @@ namespace Nuke.Common.Tests.Execution
 
             public Target Pack => _ => _
                 .DependsOn(nameof(Compile));
+
+            public Target Analyze => _ => _
+                .After(Clean);
 
             public Target Publish => _ => _
                 .DependsOn(Test, Pack);
