@@ -29,9 +29,9 @@ namespace Nuke.Common.Execution
             var resourceStream = assembly.GetManifestResourceStream(resourceName).NotNull("resourceStream != null");
 
             var graph = new StringBuilder();
-            foreach (var target in build.TargetDefinitions)
+            foreach (var target in build.ExecutableTargets)
             {
-                var dependendBy = build.TargetDefinitions.Where(x => x.TargetDefinitionDependencies.Contains(target)).ToList();
+                var dependendBy = build.ExecutableTargets.Where(x => x.Dependencies.Contains(target)).ToList();
                 if (dependendBy.Count == 0)
                     graph.AppendLine(target.Name);
                 else

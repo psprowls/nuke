@@ -12,9 +12,9 @@ namespace Nuke.Common.Execution
 {
     internal static class RequirementService
     {
-        public static void ValidateRequirements(IReadOnlyCollection<TargetDefinition> executionList, NukeBuild build)
+        public static void ValidateRequirements(IReadOnlyCollection<ExecutableTarget> executables, NukeBuild build)
         {
-            foreach (var target in executionList)
+            foreach (var target in executables)
             foreach (var requirement in target.Requirements)
             {
                 if (requirement is Expression<Func<bool>> boolExpression)
@@ -23,9 +23,9 @@ namespace Nuke.Common.Execution
                 }
                 else
                 {
-                    var memberExpression = requirement.Body is MemberExpression
-                        ? (MemberExpression) requirement.Body
-                        : (MemberExpression) ((UnaryExpression) requirement.Body).Operand;
+                    var memberExpression = requirement.Body is UnaryExpression unaryExpression
+                        ? (MemberExpression) unaryExpression.Operand
+                        : (MemberExpression) requirement.Body;
                     var field = (FieldInfo) memberExpression.Member;
 
                     ControlFlow.Assert(field.GetValue(build) != null,

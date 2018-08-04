@@ -29,16 +29,16 @@ namespace Nuke.Common.Execution
             Logger.Log($"Host: {EnvironmentInfo.HostType}");
             Logger.Log();
 
-            var executionList = default(IReadOnlyCollection<TargetDefinition>);
+            var executingTargets = default(IReadOnlyCollection<ExecutableTarget>);
             try
             {
                 var build = s_buildFactory.Create(defaultTargetExpression);
                 s_injectionService.InjectValues(build);
                 HandleEarlyExits(build);
 
-                executionList = TargetDefinitionLoader.GetExecutingTargets(build, build.InvokedTargets);
-                RequirementService.ValidateRequirements(executionList, build);
-                Execute(executionList);
+                executingTargets = TargetDefinitionLoader.GetExecutingTargets(build, build.InvokedTargets);
+                RequirementService.ValidateRequirements(executingTargets, build);
+                Execute(executingTargets);
                 
                 return 0;
             }
@@ -61,14 +61,14 @@ namespace Nuke.Common.Execution
             }
             finally
             {
-                if (executionList != null)
-                    OutputSink.WriteSummary(executionList);
+                if (executingTargets != null)
+                    OutputSink.WriteSummary(executingTargets);
             }
         }
 
-        private static void Execute(IEnumerable<TargetDefinition> executionList)
+        private static void Execute(IEnumerable<ExecutableTarget> executableTargets)
         {
-            foreach (var target in executionList)
+            foreach (var target in executableTargets)
             {
                 if (target.Factory == null)
                 {
@@ -87,7 +87,7 @@ namespace Nuke.Common.Execution
                     var stopwatch = Stopwatch.StartNew();
                     try
                     {
-                        target.Actions.ForEach(x => x());
+                        target.Actions.ToList().ForEach(x => x());
                         target.Duration = stopwatch.Elapsed;
 
                         target.Status = ExecutionStatus.Executed;

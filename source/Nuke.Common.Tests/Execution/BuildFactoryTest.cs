@@ -23,7 +23,7 @@ namespace Nuke.Common.Tests.Execution
 
             _singleton.Should().Be(build);
 
-            var targets = build.TargetDefinitions;
+            var targets = build.ExecutableTargets;
             targets.Select(x => x.Name).Should().BeEquivalentTo(
                 nameof(Build.Clean),
                 nameof(Build.Compile),
@@ -32,7 +32,7 @@ namespace Nuke.Common.Tests.Execution
                 nameof(Build.Publish));
             targets.Should().ContainSingle(x => x.IsDefault);
 
-            TargetDefinition GetTarget(Func<Build, Target> factorySelector) => targets.Single(x => x.Factory == factorySelector(build));
+            ExecutableTarget GetTarget(Func<Build, Target> factorySelector) => targets.Single(x => x.Factory == factorySelector(build));
 
             var clean = GetTarget(x => x.Clean);
             var compile = GetTarget(x => x.Compile);
@@ -47,9 +47,9 @@ namespace Nuke.Common.Tests.Execution
             clean.Conditions.Should().Equal(build.Conditions);
             clean.Requirements.Should().Equal(build.Requirements.Cast<LambdaExpression>());
             
-            compile.TargetDefinitionDependencies.Should().BeEquivalentTo(clean);
-            pack.TargetDefinitionDependencies.Should().BeEquivalentTo(compile);
-            publish.TargetDefinitionDependencies.Should().BeEquivalentTo(test, pack);
+            compile.Dependencies.Should().BeEquivalentTo(clean);
+            pack.Dependencies.Should().BeEquivalentTo(compile);
+            publish.Dependencies.Should().BeEquivalentTo(test, pack);
         }
 
         private class Build : NukeBuild

@@ -13,46 +13,19 @@ namespace Nuke.Common.Execution
 {
     internal class TargetDefinition : ITargetDefinition
     {
-        public static TargetDefinition Create(string name, Target factory = null)
-        {
-            return new TargetDefinition(name, factory);
-        }
-
-        private TargetDefinition(string name, Target factory = null)
-        {
-            Name = name;
-            Factory = factory;
-            FactoryDependencies = new List<Target>();
-            NamedDependencies = new List<string>();
-            Actions = new List<Action>();
-            Conditions = new List<Func<bool>>();
-            Requirements = new List<LambdaExpression>();
-            TargetDefinitionDependencies = new List<TargetDefinition>();
-            RunBeforeTargets = new List<Target>();
-            RunAfterTargets = new List<Target>();
-
-            factory?.Invoke(this);
-        }
-
-        internal string Name { get; }
-
-        [CanBeNull]
-        internal Target Factory { get; }
-
         internal string Description { get; set; }
         internal bool IsDefault { get; set; }
         internal TimeSpan Duration { get; set; }
         internal ExecutionStatus Status { get; set; }
-        internal List<Func<bool>> Conditions { get; }
-        internal List<LambdaExpression> Requirements { get; }
-        internal List<Target> FactoryDependencies { get; }
-        internal List<string> NamedDependencies { get; }
-        internal List<TargetDefinition> TargetDefinitionDependencies { get; }
-        internal List<Action> Actions { get; }
+        internal List<Func<bool>> Conditions { get; } = new List<Func<bool>>();
+        internal List<LambdaExpression> Requirements { get; } = new List<LambdaExpression>();
+        internal List<Target> FactoryDependencies { get; } = new List<Target>();
+        internal List<string> NamedDependencies { get; } = new List<string>();
+        internal List<Action> Actions { get; } = new List<Action>();
         internal DependencyBehavior DependencyBehavior { get; private set; }
         internal bool Skip { get; set; }
-        internal List<Target> RunBeforeTargets { get; private set; }
-        internal List<Target> RunAfterTargets { get; private set; }
+        internal List<Target> RunBeforeTargets { get; private set; } = new List<Target>();
+        internal List<Target> RunAfterTargets { get; private set; } = new List<Target>();
 
         ITargetDefinition ITargetDefinition.Description(string description)
         {
@@ -130,11 +103,6 @@ namespace Nuke.Common.Execution
         {
             RunAfterTargets.AddRange(targets);
             return this;
-        }
-
-        public override string ToString()
-        {
-            return $"Target '{Name}'";
         }
     }
 }

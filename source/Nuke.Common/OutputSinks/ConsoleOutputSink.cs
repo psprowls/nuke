@@ -61,13 +61,13 @@ namespace Nuke.Common.OutputSinks
             WriteWithColors(text, ConsoleColor.Green);
         }
 
-        public virtual void WriteSummary(IReadOnlyCollection<TargetDefinition> executionList)
+        public virtual void WriteSummary(IReadOnlyCollection<ExecutableTarget> executableTargets)
         {
-            var firstColumn = Math.Max(executionList.Max(x => x.Name.Length) + 4, val2: 20);
+            var firstColumn = Math.Max(executableTargets.Max(x => x.Name.Length) + 4, val2: 20);
             var secondColumn = 10;
             var thirdColumn = 10;
             var allColumns = firstColumn + secondColumn + thirdColumn;
-            var totalDuration = executionList.Aggregate(TimeSpan.Zero, (t, x) => t.Add(x.Duration));
+            var totalDuration = executableTargets.Aggregate(TimeSpan.Zero, (t, x) => t.Add(x.Duration));
 
             string CreateLine(string target, string executionStatus, string duration)
                 => target.PadRight(firstColumn, paddingChar: ' ')
@@ -80,7 +80,7 @@ namespace Nuke.Common.OutputSinks
             Logger.Log(new string(c: '=', count: allColumns));
             Logger.Log(CreateLine("Target", "Status", "Duration"));
             Logger.Log(new string(c: '-', count: allColumns));
-            foreach (var target in executionList)
+            foreach (var target in executableTargets)
             {
                 var line = CreateLine(target.Name, target.Status.ToString(), ToMinutesAndSeconds(target.Duration));
                 switch (target.Status)
@@ -103,7 +103,7 @@ namespace Nuke.Common.OutputSinks
             Logger.Log(CreateLine("Total", "", ToMinutesAndSeconds(totalDuration)));
             Logger.Log(new string(c: '=', count: allColumns));
             Logger.Log();
-            if (executionList.All(x => x.Status != ExecutionStatus.Failed && x.Status != ExecutionStatus.NotRun))
+            if (executableTargets.All(x => x.Status != ExecutionStatus.Failed && x.Status != ExecutionStatus.NotRun))
                 Logger.Success($"Build succeeded on {DateTime.Now.ToString(CultureInfo.CurrentCulture)}.");
             else
                 Logger.Error($"Build failed on {DateTime.Now.ToString(CultureInfo.CurrentCulture)}.");

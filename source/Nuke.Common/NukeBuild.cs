@@ -60,7 +60,7 @@ namespace Nuke.Common
             return BuildExecutor.Execute(defaultTargetExpression);
         }
 
-        internal IReadOnlyCollection<TargetDefinition> TargetDefinitions { get; set; }
+        internal IReadOnlyCollection<ExecutableTarget> ExecutableTargets { get; set; }
 
         /// <summary>
         /// Logging verbosity while building. Default is <see cref="Nuke.Common.Verbosity.Normal"/>.

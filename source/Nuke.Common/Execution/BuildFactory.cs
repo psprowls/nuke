@@ -8,11 +8,48 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Nuke.Common.Utilities;
 
 [assembly: InternalsVisibleTo("Nuke.Common.Tests")]
 
 namespace Nuke.Common.Execution
 {
+    internal class ExecutableTarget
+    {
+        public ExecutableTarget()
+        {
+        }
+        
+        public ExecutableTarget(
+            PropertyInfo property,
+            Target factory,
+            TargetDefinition definition,
+            bool isDefault,
+            IReadOnlyList<ExecutableTarget> dependencies)
+        {
+            Property = property;
+            Factory = factory;
+            Definition = definition;
+            Dependencies = dependencies;
+            IsDefault = isDefault;
+        }
+
+        public PropertyInfo Property { get; }
+        public string Name => Property.Name;
+        public Target Factory { get; }
+        public TargetDefinition Definition { get; }
+        public string Description => Definition.Description;
+        public List<Func<bool>> Conditions => Definition.Conditions;
+        public IReadOnlyList<LambdaExpression> Requirements => Definition.Requirements;
+        public IReadOnlyList<Action> Actions => Definition.Actions;
+        public IReadOnlyList<ExecutableTarget> Dependencies { get; }
+        public bool IsDefault { get; }
+
+        public ExecutionStatus Status { get; set; }
+        public TimeSpan Duration { get; set; }
+        public bool Skip { get; set; }
+    }
+
     internal class BuildFactory
     {
         private readonly Action<NukeBuild> _singletonSetter;
@@ -31,52 +68,63 @@ namespace Nuke.Common.Execution
 
             var build = Activator.CreateInstance<T>();
             var defaultTarget = defaultTargetExpression.Compile().Invoke(build);
-            build.TargetDefinitions = GetTargetDefinitions(build, defaultTarget);
+            build.ExecutableTargets = GetTargetDefinitions(build, defaultTarget);
             _singletonSetter(build);
 
             return build;
         }
 
-        private IReadOnlyCollection<TargetDefinition> GetTargetDefinitions(NukeBuild build, Target defaultTarget)
+        private IReadOnlyCollection<ExecutableTarget> GetTargetDefinitions(NukeBuild build, Target defaultTarget)
         {
-            var targetDefinitions = build.GetType()
+            var properties = build.GetType()
                 .GetProperties(ReflectionService.Instance)
-                .Where(x => x.PropertyType == typeof(Target))
-                .Select(x => LoadTargetDefinition(build, x)).ToList();
+                .Where(x => x.PropertyType == typeof(Target)).ToList();
 
-            var nameDictionary = targetDefinitions.ToDictionary(x => x.Name, x => x, StringComparer.OrdinalIgnoreCase);
-            var factoryDictionary = targetDefinitions.ToDictionary(x => x.Factory, x => x);
+            var executables = new List<ExecutableTarget>();
+            var dependencyDictionary = new Dictionary<ExecutableTarget, List<ExecutableTarget>>();
 
-            foreach (var targetDefinition in targetDefinitions)
+            foreach (var property in properties)
             {
-                var dependencies = GetDependencies(targetDefinition, nameDictionary, factoryDictionary);
-                targetDefinition.TargetDefinitionDependencies.AddRange(dependencies);
-                targetDefinition.IsDefault = targetDefinition.Factory == defaultTarget;
+                var factory = (Target) property.GetValue(build);
+                var definition = new TargetDefinition();
+                factory.Invoke(definition);
+                var isDefault = factory == defaultTarget;
+                var dependencies = new List<ExecutableTarget>();
                 
-                targetDefinition.TargetDefinitionDependencies.AddRange(targetDefinition.RunAfterTargets.Select(x => factoryDictionary[x]));
-                targetDefinition.TargetDefinitionDependencies.AddRange(
-                    targetDefinitions.Where(x => x.RunBeforeTargets.Any(y => y == targetDefinition.Factory)));
+                var executable = new ExecutableTarget(property, factory, definition, isDefault, dependencies);
+
+                executables.Add(executable);
+                dependencyDictionary.Add(executable, dependencies);
             }
 
-            return targetDefinitions;
-        }
+            foreach (var executable in executables)
+            {
+                var dependencies = GetDependencies(executable, executables).ToList();
+                dependencyDictionary[executable].AddRange(dependencies);
+            }
 
-        private TargetDefinition LoadTargetDefinition(NukeBuild build, PropertyInfo property)
-        {
-            var targetFactory = (Target) property.GetValue(build);
-            return TargetDefinition.Create(property.Name, targetFactory);
+            return executables;
         }
-
-        private IEnumerable<TargetDefinition> GetDependencies(
-            TargetDefinition targetDefinition,
-            IReadOnlyDictionary<string, TargetDefinition> nameDictionary,
-            IReadOnlyDictionary<Target, TargetDefinition> factoryDictionary)
+        
+        private IEnumerable<ExecutableTarget> GetDependencies(ExecutableTarget executable, IReadOnlyCollection<ExecutableTarget> executables)
         {
-            return targetDefinition.NamedDependencies
-                .Select(x => nameDictionary.TryGetValue(x, out var namedTarget)
-                    ? namedTarget
-                    : TargetDefinition.Create(x))
-                .Concat(targetDefinition.FactoryDependencies.Select(x => factoryDictionary[x]));
+            foreach (var namedDependency in executable.Definition.NamedDependencies)
+            {
+                yield return executables.SingleOrDefault(x => x.Name.EqualsOrdinalIgnoreCase(namedDependency))
+                             ?? new ExecutableTarget { Status = ExecutionStatus.Absent };
+            }
+
+            foreach (var factoryDependency in executable.Definition.FactoryDependencies)
+                yield return executables.Single(x => x.Factory == factoryDependency);
+                
+            foreach (var runAfterDependency in executable.Definition.RunAfterTargets)
+                yield return executables.Single(x => x.Factory == runAfterDependency);
+                
+            foreach (var potentialRunBeforeDependency in executables.Where(x => x != executable))
+            {
+                if (potentialRunBeforeDependency.Definition.RunBeforeTargets.Any(x => x == executable.Factory))
+                    yield return potentialRunBeforeDependency;
+            }
         }
     }
 }
