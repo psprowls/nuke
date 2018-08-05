@@ -45,10 +45,14 @@ namespace Nuke.Common
 
         public string Name { get; set; }
         public string Separator { get; set; }
+        public bool Custom { get; set; }
 
         [CanBeNull]
         public override object GetValue(string memberName, Type memberType)
         {
+            if (Custom)
+                return null;
+
             memberType = Nullable.GetUnderlyingType(memberType) == null &&
                          memberType != typeof(string) &&
                          !memberType.IsArray

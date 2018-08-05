@@ -8,7 +8,12 @@ using System.Reflection;
 
 namespace Nuke.Common.Execution
 {
-    internal class InjectionService
+    internal interface IInjectionService
+    {
+        void InjectValues(NukeBuild build);
+    }
+
+    internal class InjectionService : IInjectionService
     {
         public void InjectValues(NukeBuild build)
         {

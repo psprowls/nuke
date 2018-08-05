@@ -10,11 +10,16 @@ using System.Reflection;
 
 namespace Nuke.Common.Execution
 {
-    internal static class RequirementService
+    internal interface IRequirementService
     {
-        public static void ValidateRequirements(IReadOnlyCollection<ExecutableTarget> executables, NukeBuild build)
+        void ValidateRequirements(NukeBuild build);
+    }
+
+    internal class RequirementService : IRequirementService
+    {
+        public void ValidateRequirements(NukeBuild build)
         {
-            foreach (var target in executables)
+            foreach (var target in build.ExecutionPlan)
             foreach (var requirement in target.Requirements)
             {
                 if (requirement is Expression<Func<bool>> boolExpression)

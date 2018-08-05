@@ -57,13 +57,17 @@ namespace Nuke.Common
         protected static int Execute<T>(Expression<Func<T, Target>> defaultTargetExpression)
             where T : NukeBuild
         {
-            var buildFactory = new BuildFactory();
+            var injectionService = new InjectionService();
+            var buildFactory = new BuildFactory(new ExecutableTargetLoader(), new ExecutionPlanner());
+            var buildManager = new BuildManager(new BuildExecutor(), new RequirementService());
+
             Instance = buildFactory.Create(defaultTargetExpression);
-            
-            return BuildManager.Execute(Instance);
+            injectionService.InjectValues(Instance);
+            return buildManager.Execute(Instance);
         }
 
         internal IReadOnlyCollection<ExecutableTarget> ExecutableTargets { get; set; }
+        internal IReadOnlyCollection<ExecutableTarget> ExecutionPlan { get; set; }
 
         /// <summary>
         /// Logging verbosity while building. Default is <see cref="Nuke.Common.Verbosity.Normal"/>.
@@ -86,8 +90,8 @@ namespace Nuke.Common
         /// <summary>
         /// Disables execution of target dependencies.
         /// </summary>
-        [Parameter("Disables execution of dependent targets.", Name = "Skip", Separator = "+")]
-        public string[] SkippedTargets { get; } = EnvironmentInfo.SkippedTargets;
+        [Parameter("Disables execution of dependent targets.", Name = "Skip", Separator = "+", Custom = true)]
+        public string[] SkippedTargets => ExecutionPlan.Where(x => x.Status == ExecutionStatus.Skipped).Select(x => x.Name).ToArray();
 
         /// <summary>
         /// Enables sanity checks for the <c>PATH</c> environment variable.
@@ -113,7 +117,7 @@ namespace Nuke.Common
         public LogLevel LogLevel => (LogLevel) Verbosity;
 
         public string[] InvokedTargets { get; } = EnvironmentInfo.InvokedTargets;
-        public string[] ExecutingTargets { get; }
+        public string[] ExecutingTargets => ExecutionPlan.Where(x => x.Status != ExecutionStatus.Skipped).Select(x => x.Name).ToArray();
 
         /// <summary>
         /// Gets the full path to the root directory where the <c>.nuke</c> file is located.

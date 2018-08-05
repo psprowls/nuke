@@ -12,52 +12,42 @@ using Nuke.Common.Utilities;
 
 namespace Nuke.Common.Execution
 {
-    internal static class BuildManager
+    internal class BuildManager
     {
         public const string DefaultTarget = "default";
 
-        private static readonly InjectionService s_injectionService = new InjectionService();
+        private readonly IBuildExecutor _buildExecutor;
+        private readonly IRequirementService _requirementService;
 
-        public static int Execute(NukeBuild build)
+        public BuildManager(IBuildExecutor buildExecutor, IRequirementService requirementService)
+        {
+            _buildExecutor = buildExecutor;
+            _requirementService = requirementService;
+        }
+
+        public int Execute(NukeBuild build)
         {
             Logger.Log(FigletTransform.GetText("NUKE"));
             Logger.Log($"Version: {typeof(BuildManager).GetTypeInfo().Assembly.GetVersionText()}");
             Logger.Log($"Host: {EnvironmentInfo.HostType}");
             Logger.Log();
 
-            var executingTargets = default(IReadOnlyCollection<ExecutableTarget>);
             try
             {
-                s_injectionService.InjectValues(build);
                 HandleEarlyExits(build);
 
-                executingTargets = TargetDefinitionLoader.GetExecutingTargets(build, build.InvokedTargets);
-                RequirementService.ValidateRequirements(executingTargets, build);
-                BuildExecutor.Execute(executingTargets);
-                
+                _requirementService.ValidateRequirements(build);
+                _buildExecutor.Execute(build);
+
                 return 0;
             }
-            catch (AggregateException exception)
+            catch
             {
-                foreach (var innerException in exception.Flatten().InnerExceptions)
-                    OutputSink.Error(innerException.Message, innerException.StackTrace);
-                return -exception.Message.GetHashCode();
-            }
-            catch (TargetInvocationException exception)
-            {
-                var innerException = exception.InnerException.NotNull();
-                OutputSink.Error(innerException.Message, innerException.StackTrace);
-                return -exception.Message.GetHashCode();
-            }
-            catch (Exception exception)
-            {
-                OutputSink.Error(exception.Message, exception.StackTrace);
-                return -exception.Message.GetHashCode();
+                return 1;
             }
             finally
             {
-                if (executingTargets != null)
-                    OutputSink.WriteSummary(executingTargets);
+                OutputSink.WriteSummary(build.ExecutionPlan);
             }
         }
 
