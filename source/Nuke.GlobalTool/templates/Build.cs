@@ -6,6 +6,7 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;                                                                 // DOTNET
 using Nuke.Common.Tools.GitVersion;                                                             // GITVERSION
 using Nuke.Common.Tools.MSBuild;                                                                // MSBUILD
+using static Nuke.Common.ChangeLog.ChangelogTasks;                                              // CHANGELOG
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
@@ -72,6 +73,8 @@ class Build : NukeBuild
                 .SetInformationalVersion(GitVersion.InformationalVersion)                       // DOTNET && GITVERSION
                 .EnableNoRestore());                                                            // DOTNET
         });
+    
+    string ChangelogFile => RootDirectory / "CHANGELOG.md";                                     // CHANGELOG
 
     private Target Pack => _ => _
         .DependsOn(Compile)
@@ -81,6 +84,7 @@ class Build : NukeBuild
                 .SetTargetPath(SolutionFile)                                                    // MSBUILD
                 .SetTargets("Restore", "Pack")                                                  // MSBUILD
                 .SetPackageVersion(GitVersion.NuGetVersionV2)                                   // MSBUILD && GITVERSION
+                .SetPackageReleaseNotes(GetNuGetReleaseNotes(ChangelogFile, GitRepository))     // MSBUILD && CHANGELOG
                 .SetPackageOutputPath(ArtifactsDirectory)                                       // MSBUILD && ARTIFACTS_DIR
                 .SetPackageOutputPath(OutputDirectory)                                          // MSBUILD && OUTPUT_DIR
                 .SetConfiguration(Configuration)                                                // MSBUILD
@@ -88,10 +92,39 @@ class Build : NukeBuild
             DotNetPack(s => s                                                                   // DOTNET
                 .SetProject(SolutionFile)                                                       // DOTNET
                 .SetVersion(GitVersion.NuGetVersionV2)                                          // DOTNET && GITVERSION
+                .SetPackageReleaseNotes(GetNuGetReleaseNotes(ChangelogFile, GitRepository))     // DOTNET && CHANGELOG
                 .SetOutputDirectory(ArtifactsDirectory)                                         // DOTNET && ARTIFACTS_DIR
                 .SetOutputDirectory(OutputDirectory)                                            // DOTNET && OUTPUT_DIR
                 .SetConfiguration(Configuration)                                                // DOTNET
                 .EnableNoBuild()                                                                // DOTNET
                 .EnableIncludeSymbols());                                                       // DOTNET
+        });
+    
+    
+
+    Target Pack => _ => _
+        .DependsOn(Compile)
+        .Executes(() =>
+        {
+            var releaseNotes = ChangelogSectionNotes
+                .Select(x => x.Replace("- ", "\u2022 ").Replace("`", string.Empty).Replace(",", "%2C"))
+                .Concat(string.Empty)
+                .Concat($"Full changelog at {GitRepository.GetGitHubBrowseUrl(ChangelogFile)}")
+                .JoinNewLine();
+
+            DotNetPack(s => s
+                .SetProject(Solution)
+                .EnableNoBuild()
+                .SetConfiguration(Configuration)
+                .EnableIncludeSymbols()
+                .SetOutputDirectory(OutputDirectory)
+                .SetVersion(GitVersion.NuGetVersionV2)
+                .SetPackageReleaseNotes(releaseNotes));
+
+            if (InstallGlobalTool)
+            {
+                SuppressErrors(() => DotNet($"tool uninstall -g {GlobalToolProject.Name}"));
+                DotNet($"tool install -g {GlobalToolProject.Name} --add-source {OutputDirectory} --version {GitVersion.NuGetVersionV2}");
+            }
         });
 }
