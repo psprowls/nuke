@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using Nuke.CodeGeneration.Model;
 using Nuke.Common;
 using Nuke.Common.Utilities;
@@ -83,7 +84,7 @@ namespace Nuke.CodeGeneration.Generators
         {
             return property.Type.StartsWith("bool");
         }
-
+    
         public static string GetNullabilityAttribute(this Property property)
         {
             var isOptional = property.Assertion.ToString().StartsWith("NullOr");
