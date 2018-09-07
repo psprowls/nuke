@@ -8,13 +8,14 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
+using Nuke.Common.Utilities.Collections;
 
 namespace Nuke.Common.ProjectModel
 {
     [PublicAPI]
     public static class ProjectModelTasks
     {
-        public static Solution ParseSolution(string solutionFile, string configuration = null, string targetFramework = null)
+        public static Solution ParseSolution(string solutionFile)
         {
             string GuidPattern(string text)
                 => $@"\{{(?<{Regex.Escape(text)}>[0-9a-fA-F]{{8}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{12}})\}}";
@@ -27,12 +28,8 @@ namespace Nuke.Common.ProjectModel
 
             var lines = File.ReadAllLines(solutionFile);
 
-            var childToParent = lines
-                .SkipWhile(x => !Regex.IsMatch(x, @"^\s*GlobalSection\(NestedProjects\) = preSolution$"))
-                .Skip(count: 1)
-                .TakeWhile(x => !Regex.IsMatch(x, @"^\s*EndGlobalSection$"))
-                .Select(x => Regex.Match(x, $@"^\s*{GuidPattern("child")}\s*=\s*{GuidPattern("parent")}$"))
-                .ToDictionary(x => Guid.Parse(x.Groups["child"].Value), x => Guid.Parse(x.Groups["parent"].Value));
+            var header = lines.TakeWhile(x => !x.StartsWith("Project")).ToArray();
+            var solution = new Solution(solutionFile, header);
 
             var projectData = lines
                 .Select(x => Regex.Match(x, ProjectPattern()))
@@ -40,33 +37,27 @@ namespace Nuke.Common.ProjectModel
                 .Select(x =>
                     new
                     {
-                        Id = Guid.Parse(x.Groups["id"].Value),
+                        ProjectId = Guid.Parse(x.Groups["id"].Value),
                         Name = x.Groups["name"].Value,
                         TypeId = Guid.Parse(x.Groups["typeId"].Value),
                         Path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(solutionFile).NotNull(), x.Groups["path"].Value))
                     }).ToList();
-
-            var projects = new List<Project>();
-            while (projectData.Count > 0)
+            var projects = projectData.Select(x => solution.AddProject(x.Name, x.TypeId, x.Path, x.ProjectId)).ToList();
+            
+            var childToParent = lines
+                .SkipWhile(x => !Regex.IsMatch(x, @"^\s*GlobalSection\(NestedProjects\) = preSolution$"))
+                .Skip(count: 1)
+                .TakeWhile(x => !Regex.IsMatch(x, @"^\s*EndGlobalSection$"))
+                .Select(x => Regex.Match(x, $@"^\s*{GuidPattern("child")}\s*=\s*{GuidPattern("parent")}$"))
+                .ToDictionary(x => Guid.Parse(x.Groups["child"].Value), x => Guid.Parse(x.Groups["parent"].Value));
+            foreach (var (child, parent) in childToParent)
             {
-                var data = projectData.First();
-                projectData.Remove(data);
-
-                Project parent = null;
-                if (childToParent.TryGetValue(data.Id, out var parentId))
-                {
-                    parent = projects.SingleOrDefault(x => x.Id == parentId);
-                    if (parent == null)
-                    {
-                        projectData.Add(data);
-                        continue;
-                    }
-                }
-
-                projects.Add(new Project(data.Id, data.Name, data.Path, data.TypeId, parent, configuration, targetFramework));
+                var childProject = projects.SingleOrDefault(x => x.ProjectId == child).NotNull("childProject != null");
+                var parentProject = projects.SingleOrDefault(x => x.ProjectId == parent).NotNull("parentProject != null");
+                solution.SetParentProject(parentProject, childProject);
             }
 
-            return new Solution(solutionFile, projects.AsReadOnly());
+            return solution;
         }
     }
 }

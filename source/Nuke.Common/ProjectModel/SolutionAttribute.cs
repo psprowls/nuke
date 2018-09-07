@@ -25,11 +25,7 @@ namespace Nuke.Common.ProjectModel
         [CanBeNull]
         public override object GetStaticValue()
         {
-            return Value = Value ??
-                           ProjectModelTasks.ParseSolution(
-                               NukeBuild.Instance.SolutionFile,
-                               Configuration ?? NukeBuild.Instance.Configuration,
-                               TargetFramework);
+            return Value = Value ?? ProjectModelTasks.ParseSolution(NukeBuild.Instance.SolutionFile);
         }
     }
 }
