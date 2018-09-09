@@ -8,7 +8,7 @@ using System.Linq;
 using FluentAssertions;
 using Nuke.Common.ProjectModel;
 using Xunit;
-using static Nuke.Common.IO.PathConstruction;
+using static Nuke.Common.IO.PathUtility;
 
 // ReSharper disable ArgumentsStyleLiteral
 

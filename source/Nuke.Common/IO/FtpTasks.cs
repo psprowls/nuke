@@ -21,11 +21,11 @@ namespace Nuke.Common.IO
         {
             Logger.Info($"Uploading directory '{directory}' to '{hostRoot}'...");
 
-            var files = PathConstruction.GlobFiles(directory, "**/*").ToList();
+            var files = PathUtility.GlobFiles(directory, "**/*").ToList();
             for (var index = 0; index < files.Count; index++)
             {
                 var file = files[index];
-                var relativePath = PathConstruction.GetRelativePath(directory, file);
+                var relativePath = PathUtility.GetRelativePath(directory, file);
                 var hostPath = $"{hostRoot}/{relativePath}";
 
                 FtpUploadFileInternal(file, hostPath, $"[{index + 1}/{files.Count}] ");

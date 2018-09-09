@@ -16,7 +16,7 @@ using Nuke.Common.Utilities.Collections;
 namespace Nuke.Common.Tooling
 {
     [PublicAPI]
-    public static class ProcessManager
+    public static class ProcessUtility
     {
         public static IProcess StartProcess(ToolSettings toolSettings)
         {

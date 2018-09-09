@@ -12,7 +12,7 @@ using Nuke.Common.IO;
 using Nuke.Common.Utilities;
 using Xunit;
 using Xunit.Abstractions;
-using static Nuke.Common.IO.PathConstruction;
+using static Nuke.Common.IO.PathUtility;
 
 namespace Nuke.Common.Tests
 {
@@ -35,7 +35,7 @@ namespace Nuke.Common.Tests
         private void CopySolutionFile(RelativePath solutionFileRelative = null)
         {
             var solutionDirectory = TestOutputDirectory / (solutionFileRelative ?? string.Empty);
-            FileSystemTasks.EnsureExistingDirectory(solutionDirectory);
+            FileSystemUtility.EnsureExistingDirectory(solutionDirectory);
             File.WriteAllText(solutionDirectory / "Dummy.sln",
                 @"
 Microsoft Visual Studio Solution File, Format Version 12.00
@@ -79,7 +79,7 @@ EndGlobal
             var bootstrappingDirectory = RootDirectory / "bootstrapping";
             var setupFileName = EnvironmentInfo.IsWin ? "setup.ps1" : "setup.sh";
             var workingDirectory = TestOutputDirectory / (setupDirectoryRelative ?? string.Empty);
-            FileSystemTasks.EnsureExistingDirectory(workingDirectory);
+            FileSystemUtility.EnsureExistingDirectory(workingDirectory);
             var setupFileAbsolute = workingDirectory / setupFileName;
 
             var bootstrappingUri = EnvironmentInfo.IsWin ? new Uri(bootstrappingDirectory).AbsoluteUri : $"file://{bootstrappingDirectory}";
@@ -154,7 +154,7 @@ EndGlobal
 
         private void AssertOutput()
         {
-            FileSystemTasks.EnsureExistingDirectory(ApprovalDirectory);
+            FileSystemUtility.EnsureExistingDirectory(ApprovalDirectory);
             var oldFiles = Directory.GetFiles(ApprovalDirectory, "*.tmp");
             foreach (var oldFile in oldFiles)
                 File.Delete(oldFile);

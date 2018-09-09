@@ -50,7 +50,7 @@ namespace Nuke.CodeGeneration
 
                 var generationDirectory = useNestedNamespaces ? Path.Combine(baseDirectory, tool.Name) : baseDirectory;
                 var generationFile = Path.Combine(generationDirectory, $"{Path.GetFileNameWithoutExtension(tool.DefinitionFile)}.Generated.cs");
-                FileSystemTasks.EnsureExistingDirectory(generationDirectory);
+                FileSystemUtility.EnsureExistingDirectory(generationDirectory);
 
                 var @namespace =
                     !useNestedNamespaces

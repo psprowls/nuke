@@ -6,11 +6,11 @@ using System;
 using System.Linq;
 using FluentAssertions;
 using Xunit;
-using static Nuke.Common.IO.PathConstruction;
+using static Nuke.Common.IO.PathUtility;
 
 namespace Nuke.Common.Tests
 {
-    public class PathConstructionTest
+    public class PathUtilityTest
     {
         [Theory]
         [InlineData("C:\\A\\B\\C", "C:\\A\\B", "..")]

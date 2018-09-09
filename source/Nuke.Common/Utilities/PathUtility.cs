@@ -41,7 +41,7 @@ namespace Nuke.Common.IO
     /// </code>
     /// </example>
     [PublicAPI]
-    public static class PathConstruction
+    public static class PathUtility
     {
         // TODO: check usages
         [Pure]

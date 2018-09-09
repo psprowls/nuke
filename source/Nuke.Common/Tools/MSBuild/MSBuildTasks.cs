@@ -76,7 +76,7 @@ namespace Nuke.Common.Tools.MSBuild
                 .SetProjectFile(projectFile)
                 .SetVerbosity(MSBuildVerbosity.Diagnostic)
                 .SetTargets(Guid.NewGuid().ToString());
-            var process = ProcessManager.StartProcess(toolSettings);
+            var process = ProcessUtility.StartProcess(toolSettings);
             process.AssertWaitForExit();
 
             var lines = process.Output.Select(x => x.Text).ToArray();

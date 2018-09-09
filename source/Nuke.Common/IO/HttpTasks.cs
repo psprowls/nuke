@@ -59,7 +59,7 @@ namespace Nuke.Common.IO
             webClient = clientConfigurator.InvokeSafe(webClient);
             headerConfigurator?.Invoke(webClient.Headers);
 
-            FileSystemTasks.EnsureExistingParentDirectory(path);
+            FileSystemUtility.EnsureExistingParentDirectory(path);
 
             await webClient.DownloadFileTaskAsync(new Uri(uri), path);
         }

@@ -15,18 +15,18 @@ namespace Nuke.Common
 {
     partial class NukeBuild
     {
-        public static PathConstruction.AbsolutePath BuildAssemblyDirectory
+        public static PathUtility.AbsolutePath BuildAssemblyDirectory
         {
             get
             {
                 var entryAssembly = Assembly.GetEntryAssembly();
                 ControlFlow.Assert(entryAssembly.GetTypes().Any(x => x.IsSubclassOf(typeof(NukeBuild))),
                     $"{entryAssembly} doesn't contain a NukeBuild class.");
-                return (PathConstruction.AbsolutePath) Path.GetDirectoryName(entryAssembly.Location).NotNull();
+                return (PathUtility.AbsolutePath) Path.GetDirectoryName(entryAssembly.Location).NotNull();
             }
         }
 
-        public static PathConstruction.AbsolutePath BuildProjectDirectory
+        public static PathUtility.AbsolutePath BuildProjectDirectory
         {
             get
             {
@@ -36,7 +36,7 @@ namespace Nuke.Common
                         .SingleOrDefaultOrError($"Found multiple project files in '{x}'."))
                     .FirstOrDefault(x => x != null)
                     ?.DirectoryName;
-                return (PathConstruction.AbsolutePath) buildProjectDirectory.NotNull("buildProjectDirectory != null");
+                return (PathUtility.AbsolutePath) buildProjectDirectory.NotNull("buildProjectDirectory != null");
             }
         }
         

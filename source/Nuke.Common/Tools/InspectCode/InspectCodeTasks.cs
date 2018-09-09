@@ -36,10 +36,10 @@ namespace Nuke.Common.Tools.InspectCode
 
             var shadowDirectory = GetShadowDirectory(toolSettings, installedPlugins);
 
-            FileSystemTasks.CopyDirectoryRecursively(
+            FileSystemUtility.CopyDirectoryRecursively(
                 Path.GetDirectoryName(toolSettings.ToolPath).NotNull(),
                 shadowDirectory,
-                FileSystemTasks.FileExistsPolicy.OverwriteIfNewer);
+                FileSystemUtility.FileExistsPolicy.OverwriteIfNewer);
 
             installedPlugins.Select(x => x.FileName)
                 .ForEach(x => File.Copy(x, Path.Combine(shadowDirectory, Path.GetFileName(x).NotNull()), overwrite: true));
@@ -61,7 +61,7 @@ namespace Nuke.Common.Tools.InspectCode
                         GetPackageExecutable()));
             }
 
-            return ProcessManager.StartProcess(toolSettings);
+            return ProcessUtility.StartProcess(toolSettings);
         }
 
         private static void PostProcess(InspectCodeSettings toolSettings)

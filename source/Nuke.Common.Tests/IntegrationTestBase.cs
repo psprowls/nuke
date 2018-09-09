@@ -10,7 +10,7 @@ using System.Reflection;
 using Nuke.Common.IO;
 using Nuke.Common.Utilities;
 using Xunit.Abstractions;
-using static Nuke.Common.IO.PathConstruction;
+using static Nuke.Common.IO.PathUtility;
 
 namespace Nuke.Common.Tests
 {
@@ -32,7 +32,7 @@ namespace Nuke.Common.Tests
                 .GetField("test", BindingFlags.NonPublic | BindingFlags.Instance).NotNull()
                 .GetValue(testOutputHelper)).TestCase.TestMethod.Method.Name;
 
-            FileSystemTasks.EnsureCleanDirectory(".tmp");
+            FileSystemUtility.EnsureCleanDirectory(".tmp");
             TestOutputDirectory = (AbsolutePath) Path.GetFullPath(".tmp");
             Directory.CreateDirectory(TestOutputDirectory / ".git");
         }

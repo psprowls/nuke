@@ -20,7 +20,7 @@ using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
-using static Nuke.Common.IO.PathConstruction;
+using static Nuke.Common.IO.PathUtility;
 
 namespace Nuke.GlobalTool
 {
@@ -47,7 +47,7 @@ namespace Nuke.GlobalTool
             if (rootDirectory == null)
             {
                 var rootDirectoryItems = new[] { ".git", ".svn" };
-                rootDirectory = FileSystemTasks.FindParentDirectory(
+                rootDirectory = FileSystemUtility.FindParentDirectory(
                     EnvironmentInfo.WorkingDirectory,
                     x => rootDirectoryItems.Any(y => x.GetFileSystemInfos(y, SearchOption.TopDirectoryOnly).Any()));
             }

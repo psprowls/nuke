@@ -15,7 +15,7 @@ using Nuke.Common.Utilities.Collections;
 namespace Nuke.Common.IO
 {
     [PublicAPI]
-    public static class FileSystemTasks
+    public static class FileSystemUtility
     {
         public enum FileExistsPolicy
         {
@@ -68,7 +68,7 @@ namespace Nuke.Common.IO
             if (!Directory.Exists(directory))
                 return;
 
-            if (PathConstruction.IsDescendantPath(NukeBuild.BuildProjectDirectory, directory))
+            if (PathUtility.IsDescendantPath(NukeBuild.BuildProjectDirectory, directory))
             {
                 Logger.Warn($"Skipping directory '{directory}' because it is contained in the build project directory...");
                 return;
@@ -181,7 +181,7 @@ namespace Nuke.Common.IO
         private static void CopyRecursivelyInternal(string source, string target, FileExistsPolicy policy)
         {
             string GetDestinationPath(string path)
-                => Path.Combine(target, PathConstruction.GetRelativePath(source, path));
+                => Path.Combine(target, PathUtility.GetRelativePath(source, path));
 
             Directory.CreateDirectory(target);
             Directory.GetDirectories(source).ForEach(x => CopyRecursivelyInternal(x, GetDestinationPath(x), policy));
@@ -273,15 +273,15 @@ namespace Nuke.Common.IO
 
             var files = (fileGlobPatterns.Length == 0
                     ? Directory.GetFiles(directory, "*", SearchOption.AllDirectories)
-                    : PathConstruction.GlobFiles(directory, fileGlobPatterns))
+                    : PathUtility.GlobFiles(directory, fileGlobPatterns))
                 .OrderBy(x => x).ToList();
 
             using (var md5 = MD5.Create())
             {
                 foreach (var file in files)
                 {
-                    var relativePath = PathConstruction.GetRelativePath(directory, file);
-                    var unixNormalizedPath = PathConstruction.NormalizePath(relativePath, separator: '/');
+                    var relativePath = PathUtility.GetRelativePath(directory, file);
+                    var unixNormalizedPath = PathUtility.NormalizePath(relativePath, separator: '/');
                     var pathBytes = Encoding.UTF8.GetBytes(unixNormalizedPath);
                     md5.TransformBlock(pathBytes, inputOffset: 0, inputCount: pathBytes.Length, outputBuffer: pathBytes, outputOffset: 0);
 

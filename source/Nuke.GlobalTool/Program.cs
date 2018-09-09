@@ -35,7 +35,7 @@ namespace Nuke.GlobalTool
 
         private static void Handle(string[] args)
         {
-            var rootDirectory = FileSystemTasks.FindParentDirectory(
+            var rootDirectory = FileSystemUtility.FindParentDirectory(
                 Directory.GetCurrentDirectory(),
                 x => x.GetFiles(NukeBuild.ConfigurationFile).Any());
 

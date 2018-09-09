@@ -8,7 +8,7 @@ using Nuke.Common.Tools.GitVersion;                                             
 using Nuke.Common.Tools.MSBuild;                                                                // MSBUILD
 using static Nuke.Common.EnvironmentInfo;
 using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
+using static Nuke.Common.IO.PathUtility;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;                                              // DOTNET
 using static Nuke.Common.Tools.MSBuild.MSBuildTasks;                                            // MSBUILD
 

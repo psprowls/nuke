@@ -27,7 +27,7 @@ namespace Nuke.Common.Git
         /// </summary>
         public static GitRepository FromLocalDirectory(string directory, string branch = null, string remote = "origin")
         {
-            var rootDirectory = FileSystemTasks.FindParentDirectory(directory, x => x.GetDirectories(".git").Any());
+            var rootDirectory = FileSystemUtility.FindParentDirectory(directory, x => x.GetDirectories(".git").Any());
             ControlFlow.Assert(rootDirectory != null, $"Could not find root directory for '{directory}'.");
             var gitDirectory = Path.Combine(rootDirectory, ".git");
 

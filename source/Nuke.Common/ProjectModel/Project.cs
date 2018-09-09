@@ -26,15 +26,15 @@ namespace Nuke.Common.ProjectModel
         {
             Id = id;
             Name = name;
-            Path = (PathConstruction.AbsolutePath) path;
+            Path = (PathUtility.AbsolutePath) path;
             TypeId = typeId;
             Parent = parent;
         }
 
         public Guid Id { get; }
         public string Name { get; }
-        public PathConstruction.AbsolutePath Path { get; }
-        public PathConstruction.AbsolutePath Directory => (PathConstruction.AbsolutePath) System.IO.Path.GetDirectoryName(Path).NotNull();
+        public PathUtility.AbsolutePath Path { get; }
+        public PathUtility.AbsolutePath Directory => (PathUtility.AbsolutePath) System.IO.Path.GetDirectoryName(Path).NotNull();
         public Guid TypeId { get; }
 
         [CanBeNull]
