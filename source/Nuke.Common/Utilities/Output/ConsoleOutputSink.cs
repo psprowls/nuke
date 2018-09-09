@@ -3,16 +3,12 @@
 // https://github.com/nuke-build/nuke/blob/master/LICENSE
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using Nuke.Common.Execution;
-using Nuke.Common.Utilities;
 
-namespace Nuke.Common.OutputSinks
+namespace Nuke.Common.Utilities.Output
 {
     [UsedImplicitly]
     [ExcludeFromCodeCoverage]

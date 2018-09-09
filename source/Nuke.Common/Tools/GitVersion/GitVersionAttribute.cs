@@ -8,6 +8,7 @@ using JetBrains.Annotations;
 using Nuke.Common.Tools.Git;
 using Nuke.Common.Execution;
 using Nuke.Common.Tooling;
+using Nuke.Common.Utilities;
 
 namespace Nuke.Common.Tools.GitVersion
 {

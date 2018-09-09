@@ -5,9 +5,10 @@
 using System;
 using System.Linq;
 using JetBrains.Annotations;
-using Nuke.Common.BuildServers;
 using Nuke.Common.Execution;
+using Nuke.Common.Execution.Hosts;
 using Nuke.Common.Tools.Git;
+using Nuke.Common.Utilities;
 
 namespace Nuke.Common.Git
 {

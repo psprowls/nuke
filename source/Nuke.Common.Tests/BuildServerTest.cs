@@ -9,7 +9,8 @@ using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using JetBrains.Annotations;
-using Nuke.Common.BuildServers;
+using Nuke.Common.Execution.Hosts;
+using Nuke.Common.Utilities;
 using Xunit;
 
 namespace Nuke.Common.Tests

@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 
-namespace Nuke.Common.OutputSinks
+namespace Nuke.Common.Utilities.Output
 {
     public interface IOutputSink
     {

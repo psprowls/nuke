@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Build.Framework;
 using Nuke.Common.IO;
+using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
 
 namespace Nuke.Common.BuildTasks

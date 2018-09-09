@@ -9,9 +9,9 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Nuke.Common.BuildServers;
-using Nuke.Common.OutputSinks;
 using Nuke.Common.Utilities;
+using Nuke.Common.Utilities.Collections;
+using Nuke.Common.Utilities.Output;
 
 namespace Nuke.Common.Execution
 {
@@ -33,7 +33,7 @@ namespace Nuke.Common.Execution
                         Host.Instance.OutputSink,
                         () => build.LogLevel));
                 
-                Logger.Log(FigletTransform.GetText("NUKE"));
+                Logger.Block("NUKE").Dispose();
                 Logger.Log($"Version: {typeof(BuildExecutor).GetTypeInfo().Assembly.GetInformationalText()}");
                 Logger.Log($"Host: {Host.Instance.GetType().Name}");
                 Logger.Log();
@@ -47,22 +47,10 @@ namespace Nuke.Common.Execution
 
                 return 0;
             }
-            catch (AggregateException exception)
-            {
-                foreach (var innerException in exception.Flatten().InnerExceptions)
-                    Logger.Error(innerException.Message, innerException.StackTrace);
-                return -exception.Message.GetHashCode();
-            }
-            catch (TargetInvocationException exception)
-            {
-                var innerException = exception.InnerException.NotNull();
-                Logger.Error(innerException.Message, innerException.StackTrace);
-                return -exception.Message.GetHashCode();
-            }
             catch (Exception exception)
             {
-                Logger.Error(exception.Message, exception.StackTrace);
-                return -exception.Message.GetHashCode();
+                HandleException(exception);
+                return 1;
             }
             finally
             {
@@ -145,6 +133,25 @@ namespace Nuke.Common.Execution
 
             return build;
         }
+        
+        private static void HandleException(Exception exception)
+        {
+            switch (exception)
+            {
+                case AggregateException ex:
+                    ex.InnerExceptions.ForEach(HandleException);
+                    break;
+                case TargetInvocationException ex:
+                    HandleException(ex.InnerException);
+                    break;
+                case TypeInitializationException ex:
+                    HandleException(ex.InnerException);
+                    break;
+                default:
+                    Logger.Error(exception.Message, exception.StackTrace);
+                    break;
+            }
+        }
 
         public static void LogWarningsAndErrors(SevereMessageCapturingOutputSink outputSink)
         {
@@ -217,6 +224,7 @@ namespace Nuke.Common.Execution
                 Logger.Success($"Build succeeded on {DateTime.Now.ToString(CultureInfo.CurrentCulture)}.");
             else
                 Logger.Error($"Build failed on {DateTime.Now.ToString(CultureInfo.CurrentCulture)}.");
+            Logger.Log();
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
+using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
 
 namespace Nuke.Common.Tooling

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nuke.Common.Tooling;
+using Nuke.Common.Utilities;
 
 namespace Nuke.Common.Tools.Xunit
 {

@@ -3,7 +3,6 @@
 // https://github.com/nuke-build/nuke/blob/master/LICENSE
 
 using System;
-using Nuke.Common.BuildServers;
 using Nuke.Common.Execution;
 using Nuke.Common.Utilities;
 

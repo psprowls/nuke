@@ -6,9 +6,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Annotations;
-using Nuke.Common.OutputSinks;
+using Nuke.Common.Utilities.Output;
 
-namespace Nuke.Common.BuildServers
+namespace Nuke.Common.Execution.Hosts
 {
     [PublicAPI]
     [ExcludeFromCodeCoverage]

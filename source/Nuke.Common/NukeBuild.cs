@@ -9,9 +9,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using JetBrains.Annotations;
-using Nuke.Common.BuildServers;
 using Nuke.Common.Execution;
+using Nuke.Common.Execution.Hosts;
 using Nuke.Common.IO;
+using Nuke.Common.Utilities;
 
 // ReSharper disable VirtualMemberNeverOverridden.Global
 
@@ -80,7 +81,7 @@ namespace Nuke.Common
         /// Configuration to build. Default is <em>Debug</em> (local) or <em>Release</em> (server).
         /// </summary>
         [Parameter("Configuration to build. Default is 'Debug' (local) or 'Release' (server).")]
-        public virtual string Configuration { get; } = Host is BuildServers.Console ? "Debug" : "Release";
+        public virtual string Configuration { get; } = Host is Execution.Hosts.Console ? "Debug" : "Release";
 
         /// <summary>
         /// Disables execution of target dependencies.
@@ -106,7 +107,7 @@ namespace Nuke.Common
         [Parameter("Shows the help text for this build assembly.")]
         public bool Help { get; }
 
-        public bool IsLocalBuild { get; } = Host is BuildServers.Console;
+        public bool IsLocalBuild { get; } = Host is Execution.Hosts.Console;
         public bool IsServerBuild => !IsLocalBuild;
 
         public LogLevel LogLevel => (LogLevel) Verbosity;

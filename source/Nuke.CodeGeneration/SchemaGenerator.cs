@@ -11,6 +11,7 @@ using Newtonsoft.Json.Schema.Generation;
 using Newtonsoft.Json.Serialization;
 using Nuke.Common;
 using Nuke.Common.IO;
+using Nuke.Common.Utilities;
 
 namespace Nuke.CodeGeneration
 {

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Nuke.Common;
+using Nuke.Common.Utilities;
 using Console = Colorful.Console;
 
 namespace Nuke.GlobalTool

@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
 using Nuke.Common.IO;
+using Nuke.Common.Utilities;
 
 namespace Nuke.Common.ProjectModel
 {

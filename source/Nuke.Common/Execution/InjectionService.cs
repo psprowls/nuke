@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Nuke.Common.Utilities;
 
 namespace Nuke.Common.Execution
 {
@@ -12,8 +13,6 @@ namespace Nuke.Common.Execution
     {
         public static void InjectValues(NukeBuild build)
         {
-            var anyInjected = false;
-
             var injectionMembers = build.GetInjectionMembers()
                 .OrderByDescending(x => x.GetCustomAttribute<ParameterAttribute>() != null);
 
@@ -34,12 +33,7 @@ namespace Nuke.Common.Execution
                 ControlFlow.Assert(memberType.IsAssignableFrom(valueType),
                     $"Field '{member.Name}' must be of type '{valueType.Name}' to get its valued injected from '{attribute.GetType().Name}'.");
                 ReflectionService.SetValue(build, member, value);
-
-                anyInjected = true;
             }
-
-            if (anyInjected)
-                Logger.Log();
         }
     }
 }

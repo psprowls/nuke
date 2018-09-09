@@ -10,16 +10,13 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Xml;
 using JetBrains.Annotations;
-using Nuke.Common.OutputSinks;
-using Nuke.Common.Tooling;
 using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
+using Nuke.Common.Utilities.Output;
 using Refit;
-using static Nuke.Common.EnvironmentInfo;
 
-namespace Nuke.Common.BuildServers
+namespace Nuke.Common.Execution.Hosts
 {
     /// <summary>
     /// Interface according to the <a href="https://confluence.jetbrains.com/display/TCDL/Build+Script+Interaction+with+TeamCity">official website</a>.
@@ -89,7 +86,7 @@ namespace Nuke.Common.BuildServers
         {
             _messageSink = messageSink;
 
-            _systemProperties = GetLazy(() => ParseDictionary(Variable("TEAMCITY_BUILD_PROPERTIES_FILE")));
+            _systemProperties = GetLazy(() => ParseDictionary(EnvironmentInfo.Variable("TEAMCITY_BUILD_PROPERTIES_FILE")));
             _configurationProperties = GetLazy(() => ParseDictionary(SystemProperties?["TEAMCITY_CONFIGURATION_PROPERTIES_FILE"]));
             _runnerProperties = GetLazy(() => ParseDictionary(SystemProperties?["TEAMCITY_RUNNER_PROPERTIES_FILE"]));
 
@@ -110,10 +107,10 @@ namespace Nuke.Common.BuildServers
 
         public ITeamCityRestClient RestClient => _restClient.Value;
 
-        public string BuildConfiguration => Variable("TEAMCITY_BUILDCONF_NAME");
-        [NoConvert] public string BuildNumber => Variable("BUILD_NUMBER");
-        public string Version => Variable("TEAMCITY_VERSION");
-        public string ProjectName => Variable("TEAMCITY_PROJECT_NAME");
+        public string BuildConfiguration => EnvironmentInfo.Variable("TEAMCITY_BUILDCONF_NAME");
+        [NoConvert] public string BuildNumber => EnvironmentInfo.Variable("BUILD_NUMBER");
+        public string Version => EnvironmentInfo.Variable("TEAMCITY_VERSION");
+        public string ProjectName => EnvironmentInfo.Variable("TEAMCITY_PROJECT_NAME");
         public string ServerUrl => ConfigurationProperties?["TEAMCITY_SERVERURL"];
         [NoConvert] public string BranchName => ConfigurationProperties?["TEAMCITY_BUILD_BRANCH"];
 

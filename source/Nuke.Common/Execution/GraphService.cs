@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Nuke.Common.Utilities;
 
 namespace Nuke.Common.Execution
 {

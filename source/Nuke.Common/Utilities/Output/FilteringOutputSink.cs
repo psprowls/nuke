@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Annotations;
 
-namespace Nuke.Common.OutputSinks
+namespace Nuke.Common.Utilities.Output
 {
     [UsedImplicitly]
     [ExcludeFromCodeCoverage]

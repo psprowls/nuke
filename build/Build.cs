@@ -20,7 +20,7 @@ using Nuke.Common.Tools.Xunit;
 using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
 using static Nuke.Common.ChangeLog.ChangelogTasks;
-using static Nuke.Common.ControlFlow;
+using static Nuke.Common.Utilities.ControlFlow;
 using static Nuke.Common.Gitter.GitterTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using static Nuke.Common.Tools.Git.GitTasks;

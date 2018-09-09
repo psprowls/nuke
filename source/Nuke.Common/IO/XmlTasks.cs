@@ -10,6 +10,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using JetBrains.Annotations;
+using Nuke.Common.Utilities;
 
 namespace Nuke.Common.IO
 {

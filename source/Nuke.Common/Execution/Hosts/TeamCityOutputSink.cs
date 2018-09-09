@@ -6,10 +6,10 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Annotations;
-using Nuke.Common.BuildServers;
 using Nuke.Common.Utilities;
+using Nuke.Common.Utilities.Output;
 
-namespace Nuke.Common.OutputSinks
+namespace Nuke.Common.Execution.Hosts
 {
     [UsedImplicitly]
     [ExcludeFromCodeCoverage]
@@ -20,11 +20,6 @@ namespace Nuke.Common.OutputSinks
         internal TeamCityOutputSink(TeamCity teamCity)
         {
             _teamCity = teamCity;
-        }
-
-        public override void Write(string text)
-        {
-            _teamCity.WriteMessage(text);
         }
 
         public override IDisposable WriteBlock(string text)
@@ -45,11 +40,6 @@ namespace Nuke.Common.OutputSinks
         {
             _teamCity.WriteError(text, details);
             _teamCity.AddBuildProblem(text);
-        }
-
-        public override void Success(string text)
-        {
-            _teamCity.WriteMessage(text);
         }
     }
 }

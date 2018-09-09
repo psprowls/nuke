@@ -8,9 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Colorful;
-using Nuke.Common.Utilities;
 
-namespace Nuke.Common.OutputSinks
+namespace Nuke.Common.Utilities.Output
 {
     [ExcludeFromCodeCoverage]
     public static class FigletTransform

@@ -37,6 +37,7 @@ using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Slack;
 using Nuke.Common.Tools.VSWhere;
+using Nuke.Common.Utilities;
 
 [assembly: IconClass(typeof(ChangelogTasks), "books")]
 [assembly: IconClass(typeof(ControlFlow), "footprint")]

@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
 using static Nuke.Common.IO.PathConstruction;
 

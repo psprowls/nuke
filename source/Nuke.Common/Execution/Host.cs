@@ -6,12 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Build.Framework;
-using Nuke.Common.OutputSinks;
 using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
+using Nuke.Common.Utilities.Output;
 
-namespace Nuke.Common.BuildServers
+namespace Nuke.Common.Execution
 {
     public abstract class Host
     {
@@ -34,13 +33,13 @@ namespace Nuke.Common.BuildServers
             if (selectedHost != null)
             {
                 return hosts.SingleOrDefault(x => x.GetType().Name.EqualsOrdinalIgnoreCase(selectedHost))
-                    .NotNull($"Host with name '{selectedHost}' is not available. "
-                             + $"Available hosts are: {hosts.Select(x => x.GetType().Name).JoinComma()}");
+                    .NotNull(new[] { $"Host with name '{selectedHost}' is not available. Available hosts are:" }
+                        .Concat(hosts.Select(x => " - " + x.GetType().Name)).JoinNewLine());
             }
 
             var runningHosts = hosts.Where(x => x.IsRunning).ToList();
             if (runningHosts.Count > 1)
-                runningHosts.RemoveAll(x => x is Console);
+                runningHosts.RemoveAll(x => x is Hosts.Console);
 
             return runningHosts
                 .SingleOrDefaultOrError("Multiple hosts found: " + runningHosts.Select(x => x.GetType().Name).JoinComma())

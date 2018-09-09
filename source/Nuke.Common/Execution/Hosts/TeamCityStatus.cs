@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Annotations;
 
-namespace Nuke.Common.BuildServers
+namespace Nuke.Common.Execution.Hosts
 {
     [PublicAPI]
     [SuppressMessage("ReSharper", "InconsistentNaming")]

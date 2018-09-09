@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using JetBrains.Annotations;
+using Nuke.Common.Utilities;
 
 namespace Nuke.Common.IO
 {

@@ -13,6 +13,7 @@ using HtmlAgilityPack;
 using JetBrains.Annotations;
 using Nuke.CodeGeneration.Model;
 using Nuke.Common;
+using Nuke.Common.Utilities;
 
 namespace Nuke.CodeGeneration
 {

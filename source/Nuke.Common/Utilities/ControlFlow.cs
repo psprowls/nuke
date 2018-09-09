@@ -11,7 +11,7 @@ using JetBrains.Annotations;
 
 // ReSharper disable CompareNonConstrainedGenericWithNull
 
-namespace Nuke.Common
+namespace Nuke.Common.Utilities
 {
     [PublicAPI]
     [DebuggerNonUserCode]

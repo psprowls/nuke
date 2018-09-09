@@ -13,6 +13,7 @@ using System.Web;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Nuke.Common.Tooling;
+using Nuke.Common.Utilities;
 
 namespace Nuke.Common.Tools.Slack
 {

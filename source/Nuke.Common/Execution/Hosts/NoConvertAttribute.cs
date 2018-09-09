@@ -5,7 +5,7 @@
 using System;
 using System.Linq;
 
-namespace Nuke.Common.BuildServers
+namespace Nuke.Common.Execution.Hosts
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class NoConvertAttribute : Attribute

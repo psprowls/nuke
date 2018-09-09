@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using JetBrains.Annotations;
+using Nuke.Common.Utilities;
 
 namespace Nuke.Common.Tooling
 {

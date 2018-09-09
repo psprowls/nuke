@@ -9,6 +9,7 @@ using System.Linq;
 using Humanizer;
 using JetBrains.Annotations;
 using Nuke.Common;
+using Nuke.Common.Utilities;
 
 namespace Nuke.CodeGeneration.Generators
 {

@@ -4,7 +4,9 @@
 
 using System;
 using System.Linq;
-using Nuke.Common.BuildServers;
+using Nuke.Common.Execution;
+using Nuke.Common.Execution.Hosts;
+using Nuke.Common.Utilities;
 
 namespace Nuke.Common.Tools.MSBuild
 {

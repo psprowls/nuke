@@ -6,9 +6,9 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
-using Nuke.Common.OutputSinks;
+using Nuke.Common.Utilities.Output;
 
-namespace Nuke.Common
+namespace Nuke.Common.Utilities
 {
     [PublicAPI]
     [DebuggerNonUserCode]
