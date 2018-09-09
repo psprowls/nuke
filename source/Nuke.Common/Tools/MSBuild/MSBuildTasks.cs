@@ -30,7 +30,7 @@ namespace Nuke.Common.Tools.MSBuild
                     .SetConfiguration(NukeBuild.Instance.Configuration)
                     .SetNodeReuse(NukeBuild.Instance.IsLocalBuild);
 
-                var teamCityLogger = TeamCity.Instance?.ConfigurationProperties["TEAMCITY_DOTNET_MSBUILD_EXTENSIONS4_0"];
+                var teamCityLogger = (Host.Instance as TeamCity)?.ConfigurationProperties["TEAMCITY_DOTNET_MSBUILD_EXTENSIONS4_0"];
                 if (teamCityLogger != null)
                 {
                     toolSettings = toolSettings

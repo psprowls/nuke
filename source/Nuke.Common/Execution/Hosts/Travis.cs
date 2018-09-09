@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Annotations;
+using Nuke.Common.OutputSinks;
 using static Nuke.Common.EnvironmentInfo;
 
 namespace Nuke.Common.BuildServers
@@ -16,17 +17,14 @@ namespace Nuke.Common.BuildServers
     [PublicAPI]
     [BuildServer]
     [ExcludeFromCodeCoverage]
-    public class Travis
+    public class Travis : Host
     {
-        private static Lazy<Travis> s_instance = new Lazy<Travis>(() => new Travis());
-
-        public static Travis Instance => NukeBuild.Instance?.Host == HostType.Travis ? s_instance.Value : null;
-
-        internal static bool IsRunningTravis => Environment.GetEnvironmentVariable("TRAVIS") != null;
-
         internal Travis()
         {
         }
+
+        protected internal override bool IsRunning => Environment.GetEnvironmentVariable("TRAVIS") != null;
+        protected internal override IOutputSink OutputSink => new ConsoleOutputSink();
 
         public bool Ci => Variable<bool>("CI");
         public bool ContinousIntegration => Variable<bool>("CONTINUOUS_INTEGRATION");

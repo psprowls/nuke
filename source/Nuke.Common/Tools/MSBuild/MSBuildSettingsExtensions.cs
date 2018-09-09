@@ -24,7 +24,7 @@ namespace Nuke.Common.Tools.MSBuild
 
         public static MSBuildSettings AddTeamCityLogger(this MSBuildSettings toolSettings)
         {
-            var teamCity = TeamCity.Instance.NotNull("TeamCity.Instance != null");
+            var teamCity = (Host.Instance as TeamCity).NotNull("TeamCity.Instance != null");
             var teamCityLogger = teamCity.ConfigurationProperties["TEAMCITY_DOTNET_MSBUILD_EXTENSIONS4_0"];
             return toolSettings
                 .AddLoggers($"JetBrains.BuildServer.MSBuildLoggers.MSBuildLogger,{teamCityLogger}")

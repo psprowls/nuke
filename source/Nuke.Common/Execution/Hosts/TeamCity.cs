@@ -10,7 +10,10 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Xml;
 using JetBrains.Annotations;
+using Nuke.Common.OutputSinks;
+using Nuke.Common.Tooling;
 using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
 using Refit;
@@ -24,14 +27,8 @@ namespace Nuke.Common.BuildServers
     [PublicAPI]
     [BuildServer]
     [ExcludeFromCodeCoverage]
-    public class TeamCity
+    public class TeamCity : Host
     {
-        private static Lazy<TeamCity> s_instance = new Lazy<TeamCity>(() => new TeamCity());
-
-        public static TeamCity Instance => NukeBuild.Instance?.Host == HostType.TeamCity ? s_instance.Value : null;
-
-        internal static bool IsRunningTeamCity => Environment.GetEnvironmentVariable("TEAMCITY_VERSION") != null;
-
         public static T CreateRestClient<T>(string serverUrl, string username, string password)
         {
             var credentials = new NetworkCredential(username, password);
@@ -83,9 +80,14 @@ namespace Nuke.Common.BuildServers
         private readonly Lazy<IReadOnlyDictionary<string, string>> _runnerProperties;
         private readonly Lazy<ITeamCityRestClient> _restClient;
 
-        internal TeamCity(Action<string> messageSink = null)
+        internal TeamCity()
+            : this(System.Console.WriteLine)
         {
-            _messageSink = messageSink ?? Console.WriteLine;
+        }
+
+        internal TeamCity(Action<string> messageSink)
+        {
+            _messageSink = messageSink;
 
             _systemProperties = GetLazy(() => ParseDictionary(Variable("TEAMCITY_BUILD_PROPERTIES_FILE")));
             _configurationProperties = GetLazy(() => ParseDictionary(SystemProperties?["TEAMCITY_CONFIGURATION_PROPERTIES_FILE"]));
@@ -93,6 +95,9 @@ namespace Nuke.Common.BuildServers
 
             _restClient = GetLazy(() => CreateRestClient<ITeamCityRestClient>());
         }
+
+        protected internal override bool IsRunning => Environment.GetEnvironmentVariable("TEAMCITY_VERSION") != null;
+        protected internal override IOutputSink OutputSink => new TeamCityOutputSink(this);
 
         public T CreateRestClient<T>()
         {

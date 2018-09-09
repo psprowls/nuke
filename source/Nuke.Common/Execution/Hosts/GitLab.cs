@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Annotations;
+using Nuke.Common.OutputSinks;
 using static Nuke.Common.EnvironmentInfo;
 
 namespace Nuke.Common.BuildServers
@@ -16,17 +17,14 @@ namespace Nuke.Common.BuildServers
     [PublicAPI]
     [BuildServer]
     [ExcludeFromCodeCoverage]
-    public class GitLab
+    public class GitLab : Host
     {
-        private static Lazy<GitLab> s_instance = new Lazy<GitLab>(() => new GitLab());
-
-        public static GitLab Instance => NukeBuild.Instance?.Host == HostType.GitLab ? s_instance.Value : null;
-
-        internal static bool IsRunningGitLab => Environment.GetEnvironmentVariable("GITLAB_CI") != null;
-
         internal GitLab()
         {
         }
+
+        protected internal override bool IsRunning => Environment.GetEnvironmentVariable("GITLAB_CI") != null;
+        protected internal override IOutputSink OutputSink => new ConsoleOutputSink();
 
         /// <summary>
         /// Mark that job is executed in CI environment.

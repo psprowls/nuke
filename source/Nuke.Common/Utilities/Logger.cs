@@ -6,7 +6,6 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
-using Nuke.Common.BuildServers;
 using Nuke.Common.OutputSinks;
 
 namespace Nuke.Common
@@ -16,13 +15,10 @@ namespace Nuke.Common
     [DebuggerStepThrough]
     public static class Logger
     {
+        public static IOutputSink OutputSink = new ConsoleOutputSink();
+        
         /// <summary>
-        /// Provides a logging block for better readability. The actual output is dependent on the executing environment.
-        /// <ul>
-        ///   <li><b>Console:</b> logs message with figlet font <em>cybermedium</em></li>
-        ///   <li><b>TeamCity:</b> calls <see cref="TeamCity.OpenBlock"/> and <see cref="TeamCity.CloseBlock"/></li>
-        ///   <li><b>Bitrise:</b> logs message with figlet font <em>ansi-shadow</em></li>
-        /// </ul>
+        /// Provides a logging block for better readability.
         /// </summary>
         /// <returns>
         /// Returns an <see cref="IDisposable"/> which will automatically end the block.

@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Annotations;
+using Nuke.Common.OutputSinks;
 using static Nuke.Common.EnvironmentInfo;
 
 namespace Nuke.Common.BuildServers
@@ -16,17 +17,14 @@ namespace Nuke.Common.BuildServers
     [PublicAPI]
     [BuildServer]
     [ExcludeFromCodeCoverage]
-    public class Jenkins
+    public class Jenkins : Host
     {
-        private static Lazy<Jenkins> s_instance = new Lazy<Jenkins>(() => new Jenkins());
-
-        public static Jenkins Instance => NukeBuild.Instance?.Host == HostType.Jenkins ? s_instance.Value : null;
-
-        internal static bool IsRunningJenkins => Environment.GetEnvironmentVariable("JENKINS_HOME") != null;
-
         internal Jenkins()
         {
         }
+
+        protected internal override bool IsRunning => Environment.GetEnvironmentVariable("JENKINS_HOME") != null;
+        protected internal override IOutputSink OutputSink => new ConsoleOutputSink();
 
         /// <summary>
         /// The current build display name, such as "#14".

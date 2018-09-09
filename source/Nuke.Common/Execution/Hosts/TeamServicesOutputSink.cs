@@ -25,14 +25,14 @@ namespace Nuke.Common.OutputSinks
         {
             _teamServices.LogIssue(TeamServicesIssueType.Warning, text);
             if (details != null)
-                Console.WriteLine(details);
+                System.Console.WriteLine(details);
         }
 
         public override void Error(string text, string details = null)
         {
             _teamServices.LogIssue(TeamServicesIssueType.Error, text);
             if (details != null)
-                Console.WriteLine(details);
+                System.Console.WriteLine(details);
         }
     }
 }

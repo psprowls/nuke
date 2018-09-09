@@ -24,13 +24,13 @@ namespace Nuke.Common.Git
         public static GitRepository Value { get; private set; }
 
         private static Lazy<string> s_branch = new Lazy<string>(()
-            => AppVeyor.Instance?.RepositoryBranch ??
-               Bitrise.Instance?.GitBranch ??
-               GitLab.Instance?.CommitRefName ??
-               Jenkins.Instance?.GitBranch ??
-               TeamCity.Instance?.BranchName ??
-               TeamServices.Instance?.SourceBranchName ??
-               Travis.Instance?.Branch ??
+            => (Host.Instance as AppVeyor)?.RepositoryBranch ??
+               (Host.Instance as Bitrise)?.GitBranch ??
+               (Host.Instance as GitLab)?.CommitRefName ??
+               (Host.Instance as Jenkins)?.GitBranch ??
+               (Host.Instance as TeamCity)?.BranchName ??
+               (Host.Instance as TeamServices)?.SourceBranchName ??
+               (Host.Instance as Travis)?.Branch ??
                GitTasks.GitCurrentBranch());
 
         [CanBeNull]

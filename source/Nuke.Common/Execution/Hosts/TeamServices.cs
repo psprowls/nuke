@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Annotations;
+using Nuke.Common.OutputSinks;
 using static Nuke.Common.EnvironmentInfo;
 
 namespace Nuke.Common.BuildServers
@@ -16,21 +17,23 @@ namespace Nuke.Common.BuildServers
     [PublicAPI]
     [BuildServer]
     [ExcludeFromCodeCoverage]
-    public class TeamServices
+    public class TeamServices : Host
     {
-        private static Lazy<TeamServices> s_instance = new Lazy<TeamServices>(() => new TeamServices());
-
-        public static TeamServices Instance => NukeBuild.Instance?.Host == HostType.TeamServices ? s_instance.Value : null;
-
-        internal static bool IsRunningTeamServices => Environment.GetEnvironmentVariable("TF_BUILD") != null;
-
         private readonly Action<string> _messageSink;
 
-        internal TeamServices(Action<string> messageSink = null)
+        internal TeamServices()
+            : this(System.Console.WriteLine)
         {
-            _messageSink = messageSink ?? Console.WriteLine;
         }
 
+        internal TeamServices(Action<string> messageSink)
+        {
+            _messageSink = messageSink;
+        }
+
+        protected internal override bool IsRunning => Environment.GetEnvironmentVariable("TF_BUILD") != null;
+        protected internal override IOutputSink OutputSink => new TeamServicesOutputSink(this);
+        
         public string AgentBuildDirectory => Variable("AGENT_BUILDDIRECTORY");
         public string AgentHomeDirectory => Variable("AGENT_HOMEDIRECTORY");
         public long AgentId => Variable<long>("AGENT_ID");

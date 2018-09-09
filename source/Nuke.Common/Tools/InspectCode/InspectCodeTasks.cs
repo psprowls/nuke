@@ -64,7 +64,7 @@ namespace Nuke.Common.Tools.InspectCode
 
         private static void PostProcess(InspectCodeSettings toolSettings)
         {
-            TeamCity.Instance?.ImportData(TeamCityImportType.ReSharperInspectCode, toolSettings.Output);
+            (Host.Instance as TeamCity)?.ImportData(TeamCityImportType.ReSharperInspectCode, toolSettings.Output);
         }
 
         // TODO [3]: validation of wave version?

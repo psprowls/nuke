@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using JetBrains.Annotations;
+using Nuke.Common.OutputSinks;
 using static Nuke.Common.EnvironmentInfo;
 
 namespace Nuke.Common.BuildServers
@@ -16,17 +17,14 @@ namespace Nuke.Common.BuildServers
     [PublicAPI]
     [BuildServer]
     [ExcludeFromCodeCoverage]
-    public class AppVeyor
+    public class AppVeyor : Host
     {
-        private static Lazy<AppVeyor> s_instance = new Lazy<AppVeyor>(() => new AppVeyor());
-
-        public static AppVeyor Instance => NukeBuild.Instance?.Host == HostType.AppVeyor ? s_instance.Value : null;
-
-        internal static bool IsRunningAppVeyor => Environment.GetEnvironmentVariable("APPVEYOR") != null;
-
         internal AppVeyor()
         {
         }
+
+        protected internal override bool IsRunning => Environment.GetEnvironmentVariable("APPVEYOR") != null;
+        protected internal override IOutputSink OutputSink => new ConsoleOutputSink();
 
         public string ApiUrl => Variable("APPVEYOR_API_URL");
         public string AccountName => Variable("APPVEYOR_ACCOUNT_NAME");

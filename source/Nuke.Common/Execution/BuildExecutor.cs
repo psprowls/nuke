@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Nuke.Common.BuildServers;
 using Nuke.Common.OutputSinks;
 using Nuke.Common.Utilities;
 
@@ -21,15 +22,22 @@ namespace Nuke.Common.Execution
         public static int Execute<T>(Expression<Func<T, Target>> defaultTargetExpression)
             where T : NukeBuild
         {
-            Logger.Log(FigletTransform.GetText("NUKE"));
-            Logger.Log($"Version: {typeof(BuildExecutor).GetTypeInfo().Assembly.GetInformationalText()}");
-            Logger.Log($"Host: {EnvironmentInfo.HostType}");
-            Logger.Log();
-
             var executionList = default(IReadOnlyCollection<TargetDefinition>);
+            
             try
             {
                 var build = CreateBuildInstance(defaultTargetExpression);
+
+                Logger.OutputSink = new SevereMessageCapturingOutputSink(
+                    new FilteringOutputSink(
+                        Host.Instance.OutputSink,
+                        () => build.LogLevel));
+                
+                Logger.Log(FigletTransform.GetText("NUKE"));
+                Logger.Log($"Version: {typeof(BuildExecutor).GetTypeInfo().Assembly.GetInformationalText()}");
+                Logger.Log($"Host: {Host.Instance.GetType().Name}");
+                Logger.Log();
+                
                 InjectionService.InjectValues(build);
                 HandleEarlyExits(build);
 
@@ -42,28 +50,30 @@ namespace Nuke.Common.Execution
             catch (AggregateException exception)
             {
                 foreach (var innerException in exception.Flatten().InnerExceptions)
-                    OutputSink.Error(innerException.Message, innerException.StackTrace);
+                    Logger.Error(innerException.Message, innerException.StackTrace);
                 return -exception.Message.GetHashCode();
             }
             catch (TargetInvocationException exception)
             {
                 var innerException = exception.InnerException.NotNull();
-                OutputSink.Error(innerException.Message, innerException.StackTrace);
+                Logger.Error(innerException.Message, innerException.StackTrace);
                 return -exception.Message.GetHashCode();
             }
             catch (Exception exception)
             {
-                OutputSink.Error(exception.Message, exception.StackTrace);
+                Logger.Error(exception.Message, exception.StackTrace);
                 return -exception.Message.GetHashCode();
             }
             finally
             {
-                if (executionList != null)
+                if (Logger.OutputSink is SevereMessageCapturingOutputSink outputSink)
                 {
-                    OutputSink.Write(string.Empty);
-                    OutputSink.RepeatWarningsAndErrors();
-                    WriteSummary(executionList);
+                    Logger.OutputSink = Host.Instance.OutputSink;
+                    LogWarningsAndErrors(outputSink);
                 }
+
+                if (executionList != null)
+                    LogSummary(executionList);
             }
         }
 
@@ -135,8 +145,32 @@ namespace Nuke.Common.Execution
 
             return build;
         }
+
+        public static void LogWarningsAndErrors(SevereMessageCapturingOutputSink outputSink)
+        {
+            if (outputSink.SevereMessages.Count <= 0)
+                return;
+            
+            Logger.Log(string.Empty);
+            Logger.Log("Repeating warnings and errors:");
         
-        private static void WriteSummary(IReadOnlyCollection<TargetDefinition> executionList)
+            foreach (var severeMessage in outputSink.SevereMessages)
+            {
+                switch (severeMessage.Item1)
+                {
+                    case LogLevel.Warning:
+                        Logger.Warn(severeMessage.Item2);
+                        break;
+                    case LogLevel.Error:
+                        Logger.Error(severeMessage.Item2);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        private static void LogSummary(IReadOnlyCollection<TargetDefinition> executionList)
         {
             var firstColumn = Math.Max(executionList.Max(x => x.Name.Length) + 4, val2: 20);
             var secondColumn = 10;
@@ -152,6 +186,7 @@ namespace Nuke.Common.Execution
             string ToMinutesAndSeconds(TimeSpan duration)
                 => $"{(int) duration.TotalMinutes}:{duration:ss}";
 
+            Logger.Log();
             Logger.Log(new string(c: '=', count: allColumns));
             Logger.Log(CreateLine("Target", "Status", "Duration"));
             Logger.Log(new string(c: '-', count: allColumns));
@@ -183,6 +218,5 @@ namespace Nuke.Common.Execution
             else
                 Logger.Error($"Build failed on {DateTime.Now.ToString(CultureInfo.CurrentCulture)}.");
         }
-
     }
 }
