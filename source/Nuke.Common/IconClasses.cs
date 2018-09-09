@@ -70,7 +70,7 @@ using Nuke.Common.Utilities;
 [assembly: IconClass(typeof(PaketTasks), "box")]
 [assembly: IconClass(typeof(ParameterAttribute), "terminal")]
 [assembly: IconClass(typeof(PathConstruction), "price-tag2")]
-[assembly: IconClass(typeof(ProcessTasks), "terminal")]
+[assembly: IconClass(typeof(ProcessManager), "terminal")]
 [assembly: IconClass(typeof(ProjectModelTasks), "tree7")]
 [assembly: IconClass(typeof(ReportGeneratorTasks), "pie-chart4")]
 [assembly: IconClass(typeof(SerializationTasks), "transmission2")]

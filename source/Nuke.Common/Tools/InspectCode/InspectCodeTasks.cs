@@ -61,7 +61,7 @@ namespace Nuke.Common.Tools.InspectCode
                         GetPackageExecutable()));
             }
 
-            return ProcessTasks.StartProcess(toolSettings);
+            return ProcessManager.StartProcess(toolSettings);
         }
 
         private static void PostProcess(InspectCodeSettings toolSettings)

@@ -15,11 +15,10 @@ using Nuke.Common.Utilities.Collections;
 
 namespace Nuke.Common.Tooling
 {
-    internal class ProcessManager : IProcessManager
+    [PublicAPI]
+    public static class ProcessManager
     {
-        public static IProcessManager Instance { get; private set; } = new ProcessManager();
-
-        public virtual IProcess StartProcess(ToolSettings toolSettings)
+        public static IProcess StartProcess(ToolSettings toolSettings)
         {
             var arguments = toolSettings.GetArguments();
 
@@ -34,7 +33,7 @@ namespace Nuke.Common.Tooling
                 arguments.Filter);
         }
 
-        public virtual IProcess StartProcess(
+        public static IProcess StartProcess(
             string toolPath,
             string executionArguments = null,
             string outputArguments = null,

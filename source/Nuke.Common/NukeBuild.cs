@@ -123,9 +123,9 @@ namespace Nuke.Common
             get
             {
                 var rootDirectory =
-                    FileSystemTasks.FindParentDirectory(EnvironmentInfo.BuildProjectDirectory, x => x.GetFiles(ConfigurationFile).Any());
+                    FileSystemTasks.FindParentDirectory(BuildProjectDirectory, x => x.GetFiles(ConfigurationFile).Any());
                 ControlFlow.Assert(rootDirectory != null,
-                    $"Could not locate '{ConfigurationFile}' file while traversing up from '{EnvironmentInfo.BuildProjectDirectory}'.");
+                    $"Could not locate '{ConfigurationFile}' file while traversing up from '{BuildProjectDirectory}'.");
 
                 return (PathConstruction.AbsolutePath) rootDirectory;
             }

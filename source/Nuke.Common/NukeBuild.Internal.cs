@@ -3,13 +3,43 @@
 // https://github.com/nuke-build/nuke/blob/master/LICENSE
 
 using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using Nuke.Common.Execution;
+using Nuke.Common.IO;
 using Nuke.Common.Utilities;
+using Nuke.Common.Utilities.Collections;
 
 namespace Nuke.Common
 {
     partial class NukeBuild
     {
+        public static PathConstruction.AbsolutePath BuildAssemblyDirectory
+        {
+            get
+            {
+                var entryAssembly = Assembly.GetEntryAssembly();
+                ControlFlow.Assert(entryAssembly.GetTypes().Any(x => x.IsSubclassOf(typeof(NukeBuild))),
+                    $"{entryAssembly} doesn't contain a NukeBuild class.");
+                return (PathConstruction.AbsolutePath) Path.GetDirectoryName(entryAssembly.Location).NotNull();
+            }
+        }
+
+        public static PathConstruction.AbsolutePath BuildProjectDirectory
+        {
+            get
+            {
+                var buildProjectDirectory = new DirectoryInfo(BuildAssemblyDirectory)
+                    .DescendantsAndSelf(x => x.Parent)
+                    .Select(x => x.GetFiles("*.csproj", SearchOption.TopDirectoryOnly)
+                        .SingleOrDefaultOrError($"Found multiple project files in '{x}'."))
+                    .FirstOrDefault(x => x != null)
+                    ?.DirectoryName;
+                return (PathConstruction.AbsolutePath) buildProjectDirectory.NotNull("buildProjectDirectory != null");
+            }
+        }
+        
         private static string[] GetInvokedTargets()
         {
             var argument = ParameterService.Instance.GetCommandLineArgument<string>(position: 1);
