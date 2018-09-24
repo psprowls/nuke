@@ -43,7 +43,7 @@ partial class Build : NukeBuild
     [Parameter] string Source = "https://api.nuget.org/v3/index.json";
     [Parameter] string SymbolSource = "https://nuget.smbsrc.net/";
 
-    [Parameter("Gitter authtoken.")] readonly string GitterAuthToken;
+    //[Parameter("Gitter authtoken.")] readonly string GitterAuthToken;
     [Parameter("Slack webhook.")] readonly string SlackWebhook;
 
     [Parameter("Install global tool.")] readonly bool InstallGlobalTool;
@@ -106,16 +106,18 @@ partial class Build : NukeBuild
             DotNetPublish(s => publishSettings
                 .SetProject(CommonProject)
                 .SetFramework("netstandard2.0"));
-            DotNetPublish(s => publishSettings
-                .SetProject(CommonProject)
-                .SetFramework("net461"));
+// PVS
+//            DotNetPublish(s => publishSettings
+//                .SetProject(CommonProject)
+//                .SetFramework("net461"));
 
             DotNetPublish(s => publishSettings
                 .SetProject(CodeGenerationProject)
                 .SetFramework("netstandard2.0"));
-            DotNetPublish(s => publishSettings
-                .SetProject(CodeGenerationProject)
-                .SetFramework("net461"));
+// PVS				
+//            DotNetPublish(s => publishSettings
+//                .SetProject(CodeGenerationProject)
+//                .SetFramework("net461"));
         });
 
     string ChangelogFile => RootDirectory / "CHANGELOG.md";
@@ -126,11 +128,11 @@ partial class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            var releaseNotes = ChangelogSectionNotes
-                .Select(x => x.Replace("- ", "\u2022 ").Replace("`", string.Empty).Replace(",", "%2C"))
-                .Concat(string.Empty)
-                .Concat($"Full changelog at {GitRepository.GetGitHubBrowseUrl(ChangelogFile)}")
-                .JoinNewLine();
+//            var releaseNotes = ChangelogSectionNotes
+//                .Select(x => x.Replace("- ", "\u2022 ").Replace("`", string.Empty).Replace(",", "%2C"))
+//                .Concat(string.Empty)
+//                .Concat($"Full changelog at {GitRepository.GetGitHubBrowseUrl(ChangelogFile)}")
+//                .JoinNewLine();
 
             DotNetPack(s => s
                 .SetProject(Solution)
@@ -138,8 +140,8 @@ partial class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .EnableIncludeSymbols()
                 .SetOutputDirectory(OutputDirectory)
-                .SetVersion(GitVersion.NuGetVersionV2)
-                .SetPackageReleaseNotes(releaseNotes));
+                .SetVersion(GitVersion.NuGetVersionV2));
+//                .SetPackageReleaseNotes(releaseNotes));
         });
 
     Target Install => _ => _
@@ -198,7 +200,7 @@ partial class Build : NukeBuild
                     "ReSharper.XmlDocInspections"));
         });
 
-    Target Publish => _ => _
+/*    Target Publish => _ => _
         .DependsOn(Test, Pack)
         .Requires(() => ApiKey, () => SlackWebhook, () => GitterAuthToken)
         .Requires(() => GitHasCleanWorkingCopy())
@@ -233,5 +235,5 @@ partial class Build : NukeBuild
                     "593f3dadd73408ce4f66db89",
                     GitterAuthToken);
             }
-        });
+        });*/
 }

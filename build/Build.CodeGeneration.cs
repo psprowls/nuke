@@ -31,16 +31,17 @@ partial class Build
     Target Generate => _ => _
         .Executes(() =>
         {
+/*
             GenerateSchema<Tool>(
                 ToolSchemaFile,
                 GitRepository.GetGitHubDownloadUrl(ToolSchemaFile, MasterBranch),
                 "Tool specification schema file by NUKE");
+*/
 
             GenerateCode(
                 SpecificationsDirectory,
                 GenerationDirectory,
                 baseNamespace: "Nuke.Common.Tools",
-                useNestedNamespaces: true,
-                gitRepository: GitRepository.SetBranch(MasterBranch));
+                useNestedNamespaces: true);
         });
 }

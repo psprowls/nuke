@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
   </PropertyGroup>
   
   <Import Project="..\Package.props" />
@@ -30,9 +30,7 @@
   
   <ItemGroup Condition="'$(TargetFramework)' == ''">
     <None Include="BuildTasks\$(MSBuildProjectName).targets" PackagePath="build\netstandard2.0" Pack="true" />
-    <None Include="BuildTasks\$(MSBuildProjectName).targets" PackagePath="build\net461" Pack="true" />
     <None Include="bin\$(Configuration)\netstandard2.0\publish\**\*.*" PackagePath="build\netstandard2.0" Pack="true" />
-    <None Include="bin\$(Configuration)\net461\publish\**\*.*" PackagePath="build\net461" Pack="true" />
   </ItemGroup>
   
 </Project>
