@@ -1,0 +1,112 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nuke-build/nuke/master/source/Nuke.CodeGeneration/schema.json",
+  "references": [
+    "https://docs.npmjs.com/cli/install#//div[@id='page']",
+    "https://docs.npmjs.com/cli/run-script#//div[@id='page']"
+  ],
+  "name": "Terraform",
+  "officialUrl": "https://www.terraform.io",
+  "help": "Terraform",
+  "pathExecutable": "terraform",
+  "tasks": [
+    {
+      "help": "Initialize a configuration",
+      "postfix": "Init",
+      "definiteArgument": "init",
+      "settingsClass": {
+        "properties": [
+          {
+            "name": "Input",
+            "type": "bool",
+            "format": "-input={value}",
+            "help": "Ask for input for variables if not directly set"
+          },
+          {
+            "name": "NoColor",
+            "type": "bool",
+            "format": "-no-color",
+            "help": " Disables output with coloring"
+          }
+        ]
+      }
+    },
+    {
+      "help": "Apply a configuration",
+      "postfix": "Apply",
+      "definiteArgument": "apply",
+      "settingsClass": {
+        "properties": [
+          {
+            "name": "AutoApprove",
+            "type": "bool",
+            "format": "-auto-approve",
+            "help": "Skip interactive approval of plan before applying"
+          },
+          {
+            "name": "Input",
+            "type": "bool",
+            "format": "-input={value}",
+            "help": "Ask for input for variables if not directly set"
+          },
+          {
+            "name": "NoColor",
+            "type": "bool",
+            "format": "-no-color",
+            "help": " Disables output with coloring"
+          }
+        ]
+      }
+    },
+    {
+      "help": "Destroy a configuration",
+      "postfix": "Destroy",
+      "definiteArgument": "destroy",
+      "settingsClass": {
+        "properties": [
+          {
+            "name": "AutoApprove",
+            "type": "bool",
+            "format": "-auto-approve",
+            "help": "Skip interactive approval of plan before applying"
+          },
+          {
+            "name": "NoColor",
+            "type": "bool",
+            "format": "-no-color",
+            "help": " Disables output with coloring"
+          }
+        ]
+      }
+    },
+    {
+      "help": "This command is a container for further subcommands.",
+      "postfix": "NewWorkspace",
+      "definiteArgument": "workspace new",
+      "settingsClass": {
+        "properties": [
+          {
+            "name": "Name",
+            "type": "string",
+            "format": "{value}",
+            "help": "Workspace Name"
+          }
+        ]
+      }
+    },
+    {
+      "help": "This command is a container for further subcommands.",
+      "postfix": "SelectWorkspace",
+      "definiteArgument": "workspace select",
+      "settingsClass": {
+        "properties": [
+          {
+            "name": "Name",
+            "type": "string",
+            "format": "{value}",
+            "help": "Workspace Name"
+          }
+        ]
+      }
+    }
+  ]
+}
