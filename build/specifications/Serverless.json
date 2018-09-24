@@ -1,0 +1,87 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nuke-build/nuke/master/source/Nuke.CodeGeneration/schema.json",
+  "references": [
+    ""
+  ],
+  "name": "Serverless",
+  "officialUrl": "https://www.serverless.com/",
+  "help": "Serverless Framework",
+  "pathExecutable": "serverless",
+  "tasks": [
+    {
+      "help": "Deploy a service",
+      "postfix": "Deploy",
+      "definiteArgument": "deploy",
+      "settingsClass": {
+        "properties": [
+          {
+            "name": "Stage",
+            "type": "string",
+            "format": "--stage {value}",
+            "help": "Stage"
+          },
+          {
+            "name": "Environment",
+            "type": "string",
+            "format": "--environment {value}",
+            "help": "Environment"
+          },
+          {
+            "name": "Alias",
+            "type": "string",
+            "format": "--alias {value}",
+            "help": "Alias"
+          },
+          {
+            "name": "Force",
+            "type": "bool",
+            "format": "--force",
+            "help": "Forces Serverless to deploy"
+          }
+        ]
+      }
+    },
+    {
+      "help": "Remove a service deployment",
+      "postfix": "Remove",
+      "definiteArgument": "remove",
+      "settingsClass": {
+        "properties": [
+          {
+            "name": "Stage",
+            "type": "string",
+            "format": "{value}",
+            "help": "Stage"
+          },
+          {
+            "name": "Environment",
+            "type": "string",
+            "format": "{value}",
+            "help": "Environment"
+          },
+          {
+            "name": "Alias",
+            "type": "string",
+            "format": "{value}",
+            "help": "Alias"
+          },
+          {
+            "name": "Force",
+            "type": "bool",
+            "format": "--force",
+            "help": "Forces npm to fetch remote resources even if a local copy exists on disk."
+          }
+        ]
+      }
+    }
+  ],
+  "enumerations": [
+    {
+      "name": "NpmOnlyMode",
+      "values": [
+        "production",
+        "development"
+      ]
+    }
+  ]
+}
